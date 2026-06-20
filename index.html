@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Maintenance Ticket Assistant</title>
+  <title>AI Hotel Operations Management System</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div class="app-container">
     <header class="app-header">
-      <h1>🔧 AI Maintenance Ticket Assistant</h1>
-      <p class="subtitle">Submit and track maintenance issues efficiently</p>
+      <h1>🏨 AI Hotel Operations Management System</h1>
+      <p class="subtitle">Streamline hotel operations and maintenance requests</p>
     </header>
 
     <main class="main-content">
@@ -26,6 +26,21 @@
           <div class="form-group">
             <label for="issueDescription">Description</label>
             <textarea id="issueDescription" rows="4" placeholder="Provide detailed information about the maintenance issue..." required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="department">Department</label>
+            <select id="department" required>
+              <option value="">Select Department</option>
+              <option value="engineering">Engineering</option>
+              <option value="housekeeping">Housekeeping</option>
+              <option value="front-office">Front Office</option>
+              <option value="it">IT</option>
+              <option value="fb">F&B (Food & Beverage)</option>
+              <option value="security">Security</option>
+              <option value="hr">HR</option>
+              <option value="finance">Finance</option>
+            </select>
           </div>
 
           <div class="form-row">
@@ -74,6 +89,17 @@
       <section class="ticket-list-section">
         <h2>Active Tickets <span id="ticketCount" class="ticket-count">0</span></h2>
         <div class="filter-bar">
+          <select id="filterDepartment">
+            <option value="all">All Departments</option>
+            <option value="engineering">Engineering</option>
+            <option value="housekeeping">Housekeeping</option>
+            <option value="front-office">Front Office</option>
+            <option value="it">IT</option>
+            <option value="fb">F&B</option>
+            <option value="security">Security</option>
+            <option value="hr">HR</option>
+            <option value="finance">Finance</option>
+          </select>
           <select id="filterCategory">
             <option value="all">All Categories</option>
             <option value="plumbing">Plumbing</option>

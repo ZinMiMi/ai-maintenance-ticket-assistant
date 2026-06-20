@@ -310,6 +310,11 @@ body {
   font-weight: 600;
 }
 
+.badge-department {
+  background: #ede9fe;
+  color: #7c3aed;
+}
+
 .badge-category {
   background: var(--gray-200);
   color: var(--gray-700);

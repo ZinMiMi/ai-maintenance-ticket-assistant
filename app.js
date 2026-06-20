@@ -1,6 +1,6 @@
-// AI Maintenance Ticket Assistant - Main Application
+// AI Hotel Operations Management System - Main Application
 
-class MaintenanceTicketApp {
+class HotelOperationsApp {
   constructor() {
     this.tickets = this.loadTickets();
     this.init();
@@ -13,6 +13,7 @@ class MaintenanceTicketApp {
     this.imageUpload = document.getElementById('imageUpload');
     this.imagePreview = document.getElementById('imagePreview');
     this.uploadPlaceholder = document.getElementById('uploadPlaceholder');
+    this.filterDepartment = document.getElementById('filterDepartment');
     this.filterCategory = document.getElementById('filterCategory');
     this.filterPriority = document.getElementById('filterPriority');
 
@@ -23,6 +24,7 @@ class MaintenanceTicketApp {
   bindEvents() {
     this.form.addEventListener('submit', (e) => this.handleSubmit(e));
     this.imageUpload.addEventListener('change', (e) => this.handleImageUpload(e));
+    this.filterDepartment.addEventListener('change', () => this.renderTickets());
     this.filterCategory.addEventListener('change', () => this.renderTickets());
     this.filterPriority.addEventListener('change', () => this.renderTickets());
 
@@ -68,6 +70,7 @@ class MaintenanceTicketApp {
       id: Date.now(),
       title: document.getElementById('issueTitle').value,
       description: document.getElementById('issueDescription').value,
+      department: document.getElementById('department').value,
       category: document.getElementById('category').value,
       priority: document.getElementById('priority').value,
       image: this.imagePreview.src || null,
@@ -102,10 +105,12 @@ class MaintenanceTicketApp {
   }
 
   getFilteredTickets() {
+    const department = this.filterDepartment.value;
     const category = this.filterCategory.value;
     const priority = this.filterPriority.value;
 
     return this.tickets.filter(ticket => {
+      if (department !== 'all' && ticket.department !== department) return false;
       if (category !== 'all' && ticket.category !== category) return false;
       if (priority !== 'all' && ticket.priority !== priority) return false;
       return true;
@@ -142,6 +147,7 @@ class MaintenanceTicketApp {
         <p class="ticket-description">${this.escapeHtml(ticket.description)}</p>
         ${ticket.image ? `<img src="${ticket.image}" class="ticket-image" alt="Issue">` : ''}
         <div class="ticket-meta">
+          <span class="badge badge-department">${this.getDepartmentIcon(ticket.department)} ${this.formatDepartment(ticket.department)}</span>
           <span class="badge badge-category">${this.getCategoryIcon(ticket.category)} ${ticket.category}</span>
           <span class="badge badge-priority-${ticket.priority}">${ticket.priority}</span>
           <span class="badge badge-status">${ticket.status}</span>
@@ -149,6 +155,34 @@ class MaintenanceTicketApp {
         <div class="ticket-time">${this.formatDate(ticket.createdAt)}</div>
       </div>
     `).join('');
+  }
+
+  getDepartmentIcon(department) {
+    const icons = {
+      'engineering': '🔧',
+      'housekeeping': '🧹',
+      'front-office': '🛎️',
+      'it': '💻',
+      'fb': '🍽️',
+      'security': '🔒',
+      'hr': '👥',
+      'finance': '💰'
+    };
+    return icons[department] || '🏨';
+  }
+
+  formatDepartment(department) {
+    const names = {
+      'engineering': 'Engineering',
+      'housekeeping': 'Housekeeping',
+      'front-office': 'Front Office',
+      'it': 'IT',
+      'fb': 'F&B',
+      'security': 'Security',
+      'hr': 'HR',
+      'finance': 'Finance'
+    };
+    return names[department] || department;
   }
 
   getCategoryIcon(category) {
@@ -180,11 +214,11 @@ class MaintenanceTicketApp {
   }
 
   saveTickets() {
-    localStorage.setItem('maintenanceTickets', JSON.stringify(this.tickets));
+    localStorage.setItem('hotelOperationsTickets', JSON.stringify(this.tickets));
   }
 
   loadTickets() {
-    const saved = localStorage.getItem('maintenanceTickets');
+    const saved = localStorage.getItem('hotelOperationsTickets');
     return saved ? JSON.parse(saved) : [];
   }
 
@@ -198,4 +232,4 @@ class MaintenanceTicketApp {
 }
 
 // Initialize app
-const app = new MaintenanceTicketApp();
+const app = new HotelOperationsApp();
