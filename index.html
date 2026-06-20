@@ -67,6 +67,34 @@
             <textarea id="issueDescription" rows="4" placeholder="Provide detailed information about the maintenance issue..." required></textarea>
           </div>
 
+          <div class="ai-section">
+            <button type="button" id="aiAnalyzeBtn" class="ai-analyze-btn">
+              🤖 AI Analyze
+            </button>
+            <div id="aiSuggestions" class="ai-suggestions" style="display: none;">
+              <div class="ai-header">
+                <span class="ai-icon">✨</span>
+                <span>AI Suggestions</span>
+                <span id="aiConfidence" class="ai-confidence"></span>
+              </div>
+              <div class="ai-suggestions-grid">
+                <div class="ai-suggestion-item">
+                  <span class="ai-label">Department</span>
+                  <span id="aiDept" class="ai-value"></span>
+                </div>
+                <div class="ai-suggestion-item">
+                  <span class="ai-label">Category</span>
+                  <span id="aiCat" class="ai-value"></span>
+                </div>
+                <div class="ai-suggestion-item">
+                  <span class="ai-label">Priority</span>
+                  <span id="aiPriority" class="ai-value"></span>
+                </div>
+              </div>
+              <button type="button" id="applySuggestions" class="apply-btn">Apply Suggestions</button>
+            </div>
+          </div>
+
           <div class="form-group">
             <label for="department">Department</label>
             <select id="department" required>
@@ -166,6 +194,7 @@
     </main>
   </div>
 
+  <script src="ai-classifier.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

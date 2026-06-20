@@ -494,6 +494,135 @@ body {
   min-width: 20px;
 }
 
+/* AI Section */
+.ai-section {
+  margin-bottom: 18px;
+}
+
+.ai-analyze-btn {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, #7c3aed, #4f46e5);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.ai-analyze-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.ai-analyze-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.ai-suggestions {
+  margin-top: 12px;
+  background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+  border: 2px solid #c4b5fd;
+  border-radius: 10px;
+  padding: 16px;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.ai-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-weight: 600;
+  color: #5b21b6;
+}
+
+.ai-icon {
+  font-size: 1.2rem;
+}
+
+.ai-confidence {
+  margin-left: auto;
+  font-size: 0.8rem;
+  background: #ddd6fe;
+  padding: 2px 8px;
+  border-radius: 12px;
+  color: #7c3aed;
+}
+
+.ai-suggestions-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+@media (max-width: 500px) {
+  .ai-suggestions-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ai-suggestion-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ai-label {
+  font-size: 0.8rem;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ai-value {
+  font-weight: 600;
+  color: #1f2937;
+  text-transform: capitalize;
+}
+
+.ai-value.priority-critical {
+  color: #dc2626;
+}
+
+.ai-value.priority-high {
+  color: #ea580c;
+}
+
+.ai-value.priority-medium {
+  color: #d97706;
+}
+
+.ai-value.priority-low {
+  color: #16a34a;
+}
+
+.apply-btn {
+  width: 100%;
+  padding: 10px;
+  background: white;
+  color: #5b21b6;
+  border: 2px solid #c4b5fd;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.apply-btn:hover {
+  background: #f5f3ff;
+}
+
 /* Toast Notification */
 .toast {
   position: fixed;

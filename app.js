@@ -3,6 +3,7 @@
 class HotelOperationsApp {
   constructor() {
     this.tickets = this.loadTickets();
+    this.classifier = new AITicketClassifier();
     this.init();
   }
 
@@ -16,6 +17,9 @@ class HotelOperationsApp {
     this.filterDepartment = document.getElementById('filterDepartment');
     this.filterCategory = document.getElementById('filterCategory');
     this.filterPriority = document.getElementById('filterPriority');
+    this.aiAnalyzeBtn = document.getElementById('aiAnalyzeBtn');
+    this.aiSuggestions = document.getElementById('aiSuggestions');
+    this.lastClassification = null;
 
     this.bindEvents();
     this.renderTickets();
@@ -28,6 +32,8 @@ class HotelOperationsApp {
     this.filterDepartment.addEventListener('change', () => this.renderTickets());
     this.filterCategory.addEventListener('change', () => this.renderTickets());
     this.filterPriority.addEventListener('change', () => this.renderTickets());
+    this.aiAnalyzeBtn.addEventListener('click', () => this.analyzeTicket());
+    document.getElementById('applySuggestions').addEventListener('click', () => this.applySuggestions());
 
     // Drag and drop
     const uploadArea = document.getElementById('uploadArea');
@@ -224,6 +230,59 @@ class HotelOperationsApp {
   loadTickets() {
     const saved = localStorage.getItem('hotelOperationsTickets');
     return saved ? JSON.parse(saved) : [];
+  }
+
+  analyzeTicket() {
+    const title = document.getElementById('issueTitle').value;
+    const description = document.getElementById('issueDescription').value;
+
+    if (!title && !description) {
+      this.showToast('Please enter a title or description first');
+      return;
+    }
+
+    // Show loading state
+    this.aiAnalyzeBtn.disabled = true;
+    this.aiAnalyzeBtn.innerHTML = '🔄 Analyzing...';
+
+    // Simulate AI processing delay (remove when using real API)
+    setTimeout(() => {
+      const result = this.classifier.classify(title, description);
+      this.lastClassification = result;
+      this.displaySuggestions(result);
+
+      this.aiAnalyzeBtn.disabled = false;
+      this.aiAnalyzeBtn.innerHTML = '🤖 AI Analyze';
+    }, 500);
+  }
+
+  displaySuggestions(result) {
+    const suggestions = document.getElementById('aiSuggestions');
+    const dept = document.getElementById('aiDept');
+    const cat = document.getElementById('aiCat');
+    const priority = document.getElementById('aiPriority');
+    const confidence = document.getElementById('aiConfidence');
+
+    dept.textContent = this.formatDepartment(result.department.value);
+    cat.textContent = result.category.value;
+    priority.textContent = result.priority.value;
+    confidence.textContent = `${result.confidence}% confident`;
+
+    // Color code priority
+    priority.className = 'ai-value priority-' + result.priority.value;
+
+    suggestions.style.display = 'block';
+  }
+
+  applySuggestions() {
+    if (!this.lastClassification) return;
+
+    const result = this.lastClassification;
+    document.getElementById('department').value = result.department.value;
+    document.getElementById('category').value = result.category.value;
+    document.getElementById('priority').value = result.priority.value;
+
+    this.showToast('AI suggestions applied');
   }
 
   renderDashboard() {

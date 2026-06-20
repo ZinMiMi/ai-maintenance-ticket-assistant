@@ -7,6 +7,7 @@ A responsive web application for managing hotel operations, maintenance requests
 
 ## Features
 
+- **AI Ticket Classification** - Intelligent analysis suggests department, category, and priority based on description
 - **Operations Dashboard** - Real-time overview of ticket statistics by status, department, and priority
 - **Ticket Submission** - Create maintenance and operations tickets with title, description, department, category, and priority
 - **Department Management** - Route tickets to appropriate departments (Engineering, Housekeeping, Front Office, IT, F&B, Security, HR, Finance)
@@ -16,6 +17,38 @@ A responsive web application for managing hotel operations, maintenance requests
 - **Ticket Management** - View, filter, and resolve tickets
 - **Persistent Storage** - Tickets saved in localStorage
 - **Responsive Design** - Works on desktop and mobile devices
+
+## AI Classification
+
+The AI Ticket Classifier analyzes ticket descriptions and suggests:
+
+- **Department** - Routes to the appropriate hotel department
+- **Category** - Classifies the issue type (Plumbing, Electrical, HVAC, etc.)
+- **Priority** - Assesses urgency level based on keywords
+
+### How to Use
+
+1. Enter a ticket title and description
+2. Click **🤖 AI Analyze**
+3. Review the suggestions
+4. Click **Apply Suggestions** to auto-fill the form
+
+### Architecture
+
+The AI classifier uses a modular architecture (`ai-classifier.js`) designed for easy integration:
+
+- **Current**: Keyword-based analysis with confidence scoring
+- **Future**: Replace with Claude API by implementing the same `classify()` interface
+
+```javascript
+// To integrate Claude API, extend the classifier:
+class ClaudeClassifier extends AITicketClassifier {
+  async classify(title, description) {
+    // Call Claude API here
+    // Return same format: { department, category, priority, confidence }
+  }
+}
+```
 
 ## Dashboard
 
@@ -54,6 +87,7 @@ The Operations Dashboard provides at-a-glance metrics:
 ├── index.html          # Main HTML structure
 ├── styles.css          # Styling and responsive layout
 ├── app.js              # Application logic
+├── ai-classifier.js    # AI classification engine
 ├── README.md           # This file
 ├── .mcp.json           # MCP configuration
 ├── .claude/
