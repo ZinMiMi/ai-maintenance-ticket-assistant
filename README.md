@@ -7,6 +7,9 @@ A responsive web application for managing hotel operations, maintenance requests
 
 ## Features
 
+- **Guest Service Portal** - Mobile-friendly interface for guests to submit requests
+- **QR Code Access** - Generate QR codes for easy guest portal access
+- **Auto-Routing** - Guest requests automatically routed to correct departments
 - **Ticket Workflow Management** - Full lifecycle tracking with statuses: Open, In Progress, Pending, Resolved, Closed
 - **Ticket Assignment** - Assign tickets to specific staff members
 - **Status History** - Complete audit trail of all status changes with timestamps
@@ -20,6 +23,35 @@ A responsive web application for managing hotel operations, maintenance requests
 - **Advanced Filtering** - Filter by status, department, category, and priority
 - **Persistent Storage** - Tickets saved in localStorage
 - **Responsive Design** - Works on desktop and mobile devices
+
+## Guest Service Portal
+
+The Guest Service Portal (`guest.html`) provides a mobile-friendly interface for hotel guests.
+
+### Guest Request Types
+
+| Type | Icon | Department | Description |
+|------|------|------------|-------------|
+| Housekeeping | 🧹 | Housekeeping | Room cleaning, towels, amenities |
+| Maintenance | 🔧 | Engineering | Repairs, equipment issues |
+| Concierge | 🛎️ | Front Office | Reservations, recommendations |
+| Transportation | 🚗 | Front Office | Taxi, shuttle, car service |
+
+### Features
+
+- **Quick Category Selection** - Visual buttons for common requests
+- **Room Number Tracking** - Requests linked to guest rooms
+- **Urgency Levels** - Guests can indicate request priority
+- **Contact Preferences** - Guests choose how to be contacted
+- **Auto-Routing** - Requests automatically assigned to correct department
+- **QR Code Generation** - Generate QR codes for room placement
+- **Request Confirmation** - Guests receive request ID and ETA
+
+### Accessing the Portal
+
+- Direct link: `guest.html`
+- From staff dashboard: Click "📱 Guest Service Portal" in header
+- QR Code: Generate and place in guest rooms
 
 ## Ticket Workflow
 
@@ -110,10 +142,14 @@ The Operations Dashboard provides at-a-glance metrics:
 ## File Structure
 
 ```
-├── index.html          # Main HTML structure
-├── styles.css          # Styling and responsive layout
-├── app.js              # Application logic
+├── index.html          # Staff operations dashboard
+├── styles.css          # Staff dashboard styling
+├── app.js              # Staff application logic
 ├── ai-classifier.js    # AI classification engine
+├── guest.html          # Guest service portal
+├── guest.css           # Guest portal styling
+├── guest.js            # Guest request handling
+├── qrcode.js           # QR code generation
 ├── README.md           # This file
 ├── .mcp.json           # MCP configuration
 ├── .claude/

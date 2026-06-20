@@ -51,6 +51,23 @@ body {
   font-size: 1.1rem;
 }
 
+.guest-portal-link {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 8px 20px;
+  background: rgba(255,255,255,0.2);
+  color: white;
+  text-decoration: none;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.guest-portal-link:hover {
+  background: rgba(255,255,255,0.3);
+}
+
 .main-content {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -373,6 +390,11 @@ body {
 .badge-assigned {
   background: #ede9fe;
   color: #7c3aed;
+}
+
+.badge-guest {
+  background: #dbeafe;
+  color: #2563eb;
 }
 
 .status-select {

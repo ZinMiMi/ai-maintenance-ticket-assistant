@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guest Services - Hotel Operations</title>
+  <link rel="stylesheet" href="guest.css">
+</head>
+<body>
+  <div class="guest-container">
+    <header class="guest-header">
+      <h1>🏨 Guest Services</h1>
+      <p class="subtitle">How can we assist you today?</p>
+    </header>
+
+    <main class="guest-main">
+      <!-- Quick Request Categories -->
+      <section class="request-categories">
+        <button class="category-btn" onclick="guest.selectCategory('housekeeping')">
+          <span class="cat-icon">🧹</span>
+          <span class="cat-name">Housekeeping</span>
+          <span class="cat-desc">Room cleaning, towels, amenities</span>
+        </button>
+        <button class="category-btn" onclick="guest.selectCategory('maintenance')">
+          <span class="cat-icon">🔧</span>
+          <span class="cat-name">Maintenance</span>
+          <span class="cat-desc">Repairs, equipment issues</span>
+        </button>
+        <button class="category-btn" onclick="guest.selectCategory('concierge')">
+          <span class="cat-icon">🛎️</span>
+          <span class="cat-name">Concierge</span>
+          <span class="cat-desc">Reservations, recommendations</span>
+        </button>
+        <button class="category-btn" onclick="guest.selectCategory('transportation')">
+          <span class="cat-icon">🚗</span>
+          <span class="cat-name">Transportation</span>
+          <span class="cat-desc">Taxi, shuttle, car service</span>
+        </button>
+      </section>
+
+      <!-- Request Form -->
+      <section class="request-form-section" id="requestForm" style="display: none;">
+        <button class="back-btn" onclick="guest.hideForm()">← Back</button>
+        <h2 id="formTitle">Submit Request</h2>
+
+        <form id="guestRequestForm" class="guest-form">
+          <div class="form-group">
+            <label for="roomNumber">Room Number</label>
+            <input type="text" id="roomNumber" placeholder="e.g., 101" required>
+          </div>
+
+          <div class="form-group">
+            <label for="guestName">Your Name</label>
+            <input type="text" id="guestName" placeholder="Guest name" required>
+          </div>
+
+          <div class="form-group">
+            <label for="requestDetails">Request Details</label>
+            <textarea id="requestDetails" rows="4" placeholder="Please describe your request..." required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="urgency">Urgency</label>
+            <select id="urgency" required>
+              <option value="low">Whenever convenient</option>
+              <option value="medium">Sometime today</option>
+              <option value="high">As soon as possible</option>
+              <option value="critical">Urgent - immediate attention needed</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="contactMethod">Preferred Contact</label>
+            <select id="contactMethod">
+              <option value="room">Call my room</option>
+              <option value="sms">Text message</option>
+              <option value="none">No contact needed</option>
+            </select>
+          </div>
+
+          <button type="submit" class="submit-btn">Submit Request</button>
+        </form>
+      </section>
+
+      <!-- Success Message -->
+      <section class="success-section" id="successMessage" style="display: none;">
+        <div class="success-card">
+          <span class="success-icon">✅</span>
+          <h2>Request Submitted!</h2>
+          <p>Your request has been received and routed to our team.</p>
+          <div class="request-id">
+            <span>Request ID:</span>
+            <strong id="requestId"></strong>
+          </div>
+          <p class="eta" id="etaMessage"></p>
+          <button class="new-request-btn" onclick="guest.resetForm()">Submit Another Request</button>
+        </div>
+      </section>
+
+      <!-- QR Code Section -->
+      <section class="qr-section">
+        <h3>📱 Quick Access</h3>
+        <p>Scan QR code to access guest services from your phone</p>
+        <div id="qrCode" class="qr-code"></div>
+        <button class="generate-qr-btn" onclick="guest.generateQR()">Generate QR Code</button>
+      </section>
+    </main>
+
+    <footer class="guest-footer">
+      <p>🏨 AI Hotel Operations Management System</p>
+      <a href="index.html">Staff Login</a>
+    </footer>
+  </div>
+
+  <script src="qrcode.js"></script>
+  <script src="guest.js"></script>
+</body>
+</html>

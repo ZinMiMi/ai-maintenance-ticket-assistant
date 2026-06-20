@@ -219,6 +219,7 @@ class HotelOperationsApp {
           <span class="badge badge-priority-${ticket.priority}">${ticket.priority}</span>
           <span class="badge badge-status-${ticket.status}">${this.formatStatus(ticket.status)}</span>
           ${ticket.assignedTo ? `<span class="badge badge-assigned">👤 ${this.escapeHtml(ticket.assignedTo)}</span>` : ''}
+          ${ticket.source === 'guest' ? `<span class="badge badge-guest">📱 Guest Request</span>` : ''}
         </div>
         <div class="ticket-time">
           <span>Created: ${this.formatDate(ticket.createdAt)}</span>
