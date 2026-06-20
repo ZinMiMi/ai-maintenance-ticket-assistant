@@ -7,6 +7,9 @@ A responsive web application for managing hotel operations, maintenance requests
 
 ## Features
 
+- **Ticket Workflow Management** - Full lifecycle tracking with statuses: Open, In Progress, Pending, Resolved, Closed
+- **Ticket Assignment** - Assign tickets to specific staff members
+- **Status History** - Complete audit trail of all status changes with timestamps
 - **AI Ticket Classification** - Intelligent analysis suggests department, category, and priority based on description
 - **Operations Dashboard** - Real-time overview of ticket statistics by status, department, and priority
 - **Ticket Submission** - Create maintenance and operations tickets with title, description, department, category, and priority
@@ -14,9 +17,29 @@ A responsive web application for managing hotel operations, maintenance requests
 - **Image Upload** - Attach photos of issues via drag-and-drop or file picker
 - **Category System** - Organize by issue type (Plumbing, Electrical, HVAC, Structural, Appliance)
 - **Priority Levels** - Set urgency (Low, Medium, High, Critical) with color-coded indicators
-- **Ticket Management** - View, filter, and resolve tickets
+- **Advanced Filtering** - Filter by status, department, category, and priority
 - **Persistent Storage** - Tickets saved in localStorage
 - **Responsive Design** - Works on desktop and mobile devices
+
+## Ticket Workflow
+
+### Statuses
+
+| Status | Description |
+|--------|-------------|
+| 🔓 Open | New ticket, awaiting assignment |
+| 🔄 In Progress | Work has started |
+| ⏸️ Pending | Waiting for parts, info, or approval |
+| ✅ Resolved | Issue has been fixed |
+| 📁 Closed | Ticket completed and archived |
+
+### Workflow Features
+
+- **Status Dropdown** - Change ticket status directly from the ticket card
+- **Assign Button** - Assign tickets to staff members via prompt
+- **History Button** - View complete status change timeline
+- **Timestamps** - Created and Last Updated dates on each ticket
+- **Audit Trail** - All changes logged with timestamps
 
 ## AI Classification
 
@@ -55,8 +78,11 @@ class ClaudeClassifier extends AITicketClassifier {
 The Operations Dashboard provides at-a-glance metrics:
 
 - **Total Tickets** - All tickets in the system
-- **Open Tickets** - Tickets awaiting resolution
-- **Resolved Tickets** - Completed tickets
+- **Open** - New tickets awaiting assignment
+- **In Progress** - Tickets being worked on
+- **Pending** - Tickets waiting for external factors
+- **Resolved** - Completed tickets
+- **Closed** - Archived tickets
 - **By Department** - Ticket distribution across hotel departments
 - **By Priority** - Breakdown of tickets by urgency level
 

@@ -32,11 +32,32 @@
               <span class="stat-label">Open</span>
             </div>
           </div>
+          <div class="stat-card stat-progress">
+            <span class="stat-icon">🔄</span>
+            <div class="stat-info">
+              <span class="stat-value" id="statProgress">0</span>
+              <span class="stat-label">In Progress</span>
+            </div>
+          </div>
+          <div class="stat-card stat-pending">
+            <span class="stat-icon">⏸️</span>
+            <div class="stat-info">
+              <span class="stat-value" id="statPending">0</span>
+              <span class="stat-label">Pending</span>
+            </div>
+          </div>
           <div class="stat-card stat-resolved">
             <span class="stat-icon">✅</span>
             <div class="stat-info">
               <span class="stat-value" id="statResolved">0</span>
               <span class="stat-label">Resolved</span>
+            </div>
+          </div>
+          <div class="stat-card stat-closed">
+            <span class="stat-icon">📁</span>
+            <div class="stat-info">
+              <span class="stat-value" id="statClosed">0</span>
+              <span class="stat-label">Closed</span>
             </div>
           </div>
         </div>
@@ -137,6 +158,11 @@
           </div>
 
           <div class="form-group">
+            <label for="assignedTo">Assigned To</label>
+            <input type="text" id="assignedTo" placeholder="Staff member name (optional)">
+          </div>
+
+          <div class="form-group">
             <label for="imageUpload">Upload Image (optional)</label>
             <div class="upload-area" id="uploadArea">
               <input type="file" id="imageUpload" accept="image/*" class="file-input">
@@ -156,6 +182,14 @@
       <section class="ticket-list-section">
         <h2>Active Tickets <span id="ticketCount" class="ticket-count">0</span></h2>
         <div class="filter-bar">
+          <select id="filterStatus">
+            <option value="all">All Statuses</option>
+            <option value="open">Open</option>
+            <option value="in-progress">In Progress</option>
+            <option value="pending">Pending</option>
+            <option value="resolved">Resolved</option>
+            <option value="closed">Closed</option>
+          </select>
           <select id="filterDepartment">
             <option value="all">All Departments</option>
             <option value="engineering">Engineering</option>

@@ -14,6 +14,7 @@ class HotelOperationsApp {
     this.imageUpload = document.getElementById('imageUpload');
     this.imagePreview = document.getElementById('imagePreview');
     this.uploadPlaceholder = document.getElementById('uploadPlaceholder');
+    this.filterStatus = document.getElementById('filterStatus');
     this.filterDepartment = document.getElementById('filterDepartment');
     this.filterCategory = document.getElementById('filterCategory');
     this.filterPriority = document.getElementById('filterPriority');
@@ -29,6 +30,7 @@ class HotelOperationsApp {
   bindEvents() {
     this.form.addEventListener('submit', (e) => this.handleSubmit(e));
     this.imageUpload.addEventListener('change', (e) => this.handleImageUpload(e));
+    this.filterStatus.addEventListener('change', () => this.renderTickets());
     this.filterDepartment.addEventListener('change', () => this.renderTickets());
     this.filterCategory.addEventListener('change', () => this.renderTickets());
     this.filterPriority.addEventListener('change', () => this.renderTickets());
@@ -73,6 +75,7 @@ class HotelOperationsApp {
   handleSubmit(e) {
     e.preventDefault();
 
+    const now = new Date().toISOString();
     const ticket = {
       id: Date.now(),
       title: document.getElementById('issueTitle').value,
@@ -80,9 +83,16 @@ class HotelOperationsApp {
       department: document.getElementById('department').value,
       category: document.getElementById('category').value,
       priority: document.getElementById('priority').value,
+      assignedTo: document.getElementById('assignedTo').value || null,
       image: this.imagePreview.src || null,
       status: 'open',
-      createdAt: new Date().toISOString()
+      createdAt: now,
+      updatedAt: now,
+      history: [{
+        status: 'open',
+        timestamp: now,
+        note: 'Ticket created'
+      }]
     };
 
     this.tickets.unshift(ticket);
@@ -104,22 +114,59 @@ class HotelOperationsApp {
     this.showToast('Ticket deleted');
   }
 
-  toggleStatus(id) {
+  updateStatus(id, newStatus) {
     const ticket = this.tickets.find(t => t.id === id);
     if (ticket) {
-      ticket.status = ticket.status === 'open' ? 'resolved' : 'open';
+      const now = new Date().toISOString();
+      ticket.status = newStatus;
+      ticket.updatedAt = now;
+      ticket.history.push({
+        status: newStatus,
+        timestamp: now,
+        note: `Status changed to ${this.formatStatus(newStatus)}`
+      });
       this.saveTickets();
       this.renderTickets();
       this.renderDashboard();
+      this.showToast(`Ticket status updated to ${this.formatStatus(newStatus)}`);
+    }
+  }
+
+  assignTicket(id) {
+    const ticket = this.tickets.find(t => t.id === id);
+    if (ticket) {
+      const assignedTo = prompt('Assign to:', ticket.assignedTo || '');
+      if (assignedTo !== null) {
+        const now = new Date().toISOString();
+        ticket.assignedTo = assignedTo || null;
+        ticket.updatedAt = now;
+        ticket.history.push({
+          status: ticket.status,
+          timestamp: now,
+          note: assignedTo ? `Assigned to ${assignedTo}` : 'Assignment removed'
+        });
+        this.saveTickets();
+        this.renderTickets();
+        this.showToast(assignedTo ? `Ticket assigned to ${assignedTo}` : 'Assignment removed');
+      }
+    }
+  }
+
+  toggleHistory(id) {
+    const historyEl = document.getElementById(`history-${id}`);
+    if (historyEl) {
+      historyEl.style.display = historyEl.style.display === 'none' ? 'block' : 'none';
     }
   }
 
   getFilteredTickets() {
+    const status = this.filterStatus.value;
     const department = this.filterDepartment.value;
     const category = this.filterCategory.value;
     const priority = this.filterPriority.value;
 
     return this.tickets.filter(ticket => {
+      if (status !== 'all' && ticket.status !== status) return false;
       if (department !== 'all' && ticket.department !== department) return false;
       if (category !== 'all' && ticket.category !== category) return false;
       if (priority !== 'all' && ticket.priority !== priority) return false;
@@ -142,12 +189,22 @@ class HotelOperationsApp {
     }
 
     this.ticketList.innerHTML = filtered.map(ticket => `
-      <div class="ticket-card priority-${ticket.priority}">
+      <div class="ticket-card priority-${ticket.priority} status-${ticket.status}">
         <div class="ticket-header">
           <span class="ticket-title">${this.escapeHtml(ticket.title)}</span>
           <div class="ticket-actions">
-            <button class="btn-icon" onclick="app.toggleStatus(${ticket.id})" title="Toggle Status">
-              ${ticket.status === 'open' ? '✅' : '🔄'}
+            <select class="status-select status-${ticket.status}" onchange="app.updateStatus(${ticket.id}, this.value)">
+              <option value="open" ${ticket.status === 'open' ? 'selected' : ''}>Open</option>
+              <option value="in-progress" ${ticket.status === 'in-progress' ? 'selected' : ''}>In Progress</option>
+              <option value="pending" ${ticket.status === 'pending' ? 'selected' : ''}>Pending</option>
+              <option value="resolved" ${ticket.status === 'resolved' ? 'selected' : ''}>Resolved</option>
+              <option value="closed" ${ticket.status === 'closed' ? 'selected' : ''}>Closed</option>
+            </select>
+            <button class="btn-icon" onclick="app.assignTicket(${ticket.id})" title="Assign">
+              👤
+            </button>
+            <button class="btn-icon" onclick="app.toggleHistory(${ticket.id})" title="History">
+              📜
             </button>
             <button class="btn-icon" onclick="app.deleteTicket(${ticket.id})" title="Delete">
               🗑️
@@ -160,9 +217,25 @@ class HotelOperationsApp {
           <span class="badge badge-department">${this.getDepartmentIcon(ticket.department)} ${this.formatDepartment(ticket.department)}</span>
           <span class="badge badge-category">${this.getCategoryIcon(ticket.category)} ${ticket.category}</span>
           <span class="badge badge-priority-${ticket.priority}">${ticket.priority}</span>
-          <span class="badge badge-status">${ticket.status}</span>
+          <span class="badge badge-status-${ticket.status}">${this.formatStatus(ticket.status)}</span>
+          ${ticket.assignedTo ? `<span class="badge badge-assigned">👤 ${this.escapeHtml(ticket.assignedTo)}</span>` : ''}
         </div>
-        <div class="ticket-time">${this.formatDate(ticket.createdAt)}</div>
+        <div class="ticket-time">
+          <span>Created: ${this.formatDate(ticket.createdAt)}</span>
+          ${ticket.updatedAt !== ticket.createdAt ? `<span> • Updated: ${this.formatDate(ticket.updatedAt)}</span>` : ''}
+        </div>
+        <div id="history-${ticket.id}" class="ticket-history" style="display: none;">
+          <h4>History</h4>
+          <div class="history-timeline">
+            ${(ticket.history || []).map(entry => `
+              <div class="history-entry">
+                <span class="history-status">${this.formatStatus(entry.status)}</span>
+                <span class="history-note">${entry.note}</span>
+                <span class="history-time">${this.formatDate(entry.timestamp)}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
       </div>
     `).join('');
   }
@@ -205,6 +278,17 @@ class HotelOperationsApp {
       other: '📦'
     };
     return icons[category] || '📦';
+  }
+
+  formatStatus(status) {
+    const statuses = {
+      'open': 'Open',
+      'in-progress': 'In Progress',
+      'pending': 'Pending',
+      'resolved': 'Resolved',
+      'closed': 'Closed'
+    };
+    return statuses[status] || status;
   }
 
   formatDate(dateString) {
@@ -288,11 +372,17 @@ class HotelOperationsApp {
   renderDashboard() {
     const total = this.tickets.length;
     const open = this.tickets.filter(t => t.status === 'open').length;
+    const inProgress = this.tickets.filter(t => t.status === 'in-progress').length;
+    const pending = this.tickets.filter(t => t.status === 'pending').length;
     const resolved = this.tickets.filter(t => t.status === 'resolved').length;
+    const closed = this.tickets.filter(t => t.status === 'closed').length;
 
     document.getElementById('statTotal').textContent = total;
     document.getElementById('statOpen').textContent = open;
+    document.getElementById('statProgress').textContent = inProgress;
+    document.getElementById('statPending').textContent = pending;
     document.getElementById('statResolved').textContent = resolved;
+    document.getElementById('statClosed').textContent = closed;
 
     // Department chart
     const departments = ['engineering', 'housekeeping', 'front-office', 'it', 'fb', 'security', 'hr', 'finance'];
