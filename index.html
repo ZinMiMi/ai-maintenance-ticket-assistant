@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Maintenance Ticket Assistant</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <header class="app-header">
+      <h1>🔧 AI Maintenance Ticket Assistant</h1>
+      <p class="subtitle">Submit and track maintenance issues efficiently</p>
+    </header>
+
+    <main class="main-content">
+      <!-- Ticket Submission Form -->
+      <section class="ticket-form-section">
+        <h2>Submit New Ticket</h2>
+        <form id="ticketForm" class="ticket-form">
+          <div class="form-group">
+            <label for="issueTitle">Issue Title</label>
+            <input type="text" id="issueTitle" placeholder="Brief description of the issue" required>
+          </div>
+
+          <div class="form-group">
+            <label for="issueDescription">Description</label>
+            <textarea id="issueDescription" rows="4" placeholder="Provide detailed information about the maintenance issue..." required></textarea>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="category">Category</label>
+              <select id="category" required>
+                <option value="">Select Category</option>
+                <option value="plumbing">Plumbing</option>
+                <option value="electrical">Electrical</option>
+                <option value="hvac">HVAC</option>
+                <option value="structural">Structural</option>
+                <option value="appliance">Appliance</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="priority">Priority Level</label>
+              <select id="priority" required>
+                <option value="">Select Priority</option>
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+                <option value="critical">Critical</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="imageUpload">Upload Image (optional)</label>
+            <div class="upload-area" id="uploadArea">
+              <input type="file" id="imageUpload" accept="image/*" class="file-input">
+              <div class="upload-placeholder" id="uploadPlaceholder">
+                <span class="upload-icon">📷</span>
+                <span>Click or drag to upload image</span>
+              </div>
+              <img id="imagePreview" class="image-preview" alt="Preview" style="display:none;">
+            </div>
+          </div>
+
+          <button type="submit" class="submit-btn">Submit Ticket</button>
+        </form>
+      </section>
+
+      <!-- Ticket List -->
+      <section class="ticket-list-section">
+        <h2>Active Tickets <span id="ticketCount" class="ticket-count">0</span></h2>
+        <div class="filter-bar">
+          <select id="filterCategory">
+            <option value="all">All Categories</option>
+            <option value="plumbing">Plumbing</option>
+            <option value="electrical">Electrical</option>
+            <option value="hvac">HVAC</option>
+            <option value="structural">Structural</option>
+            <option value="appliance">Appliance</option>
+            <option value="other">Other</option>
+          </select>
+          <select id="filterPriority">
+            <option value="all">All Priorities</option>
+            <option value="critical">Critical</option>
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
+          </select>
+        </div>
+        <div id="ticketList" class="ticket-list">
+          <div class="empty-state">
+            <span class="empty-icon">📋</span>
+            <p>No tickets submitted yet</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

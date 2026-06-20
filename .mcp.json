@@ -1,0 +1,8 @@
+{
+  "mcpServers": {},
+  "contextFiles": [
+    "README.md",
+    ".claude/skills/maintenance/SKILL.md",
+    ".claude/agents/maintenance-agent.md"
+  ]
+}
