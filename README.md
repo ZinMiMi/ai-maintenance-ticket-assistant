@@ -1,5 +1,10 @@
 # AI Maintenance Ticket Assistant
 
+Live Demo:
+https://zinmimi.github.io/ai-maintenance-ticket-assistant/
+
+# AI Maintenance Ticket Assistant
+
 A simple, responsive web application for submitting and managing maintenance tickets with image upload support.
 
 ## Features
