@@ -1,77 +1,57 @@
-# AI Maintenance Ticket Assistant - Pitch Deck
-
 ---
 
-## Slide 1: Title
+marp: true
+theme: default
+paginate: true
+auto-advance: 20
+----------------
 
 # AI Maintenance Ticket Assistant
-### Streamlining Maintenance Request Management
 
-A modern web application for submitting, tracking, and resolving maintenance issues efficiently.
-
----
-
-## Slide 2: The Problem
-
-# The Challenge
-
-- Maintenance requests get lost in emails and phone calls
-- No centralized tracking system for issues
-- Difficult to prioritize urgent repairs
-- Lack of photo documentation leads to miscommunication
-- Time wasted on back-and-forth communication
+Hotel Maintenance Management System
 
 ---
 
-## Slide 3: Our Solution
+# Problem
 
-# The Solution
-
-A simple, intuitive web application that allows users to:
-
-- **Submit tickets** with detailed descriptions
-- **Upload images** to document issues visually
-- **Categorize problems** (Plumbing, Electrical, HVAC, etc.)
-- **Set priority levels** to ensure urgent issues are addressed first
-- **Track status** from submission to resolution
+* Maintenance requests arrive through phone, WhatsApp, and verbal reports
+* Difficult to track status
+* Manual follow-up consumes time
 
 ---
 
-## Slide 4: Key Features
+# Solution
 
-# Features at a Glance
-
-| Feature | Benefit |
-|---------|---------|
-| Image Upload | Visual documentation reduces miscommunication |
-| Category System | Routes issues to the right team automatically |
-| Priority Levels | Critical issues get immediate attention |
-| Filter & Search | Quickly find and manage specific tickets |
-| Responsive Design | Works on desktop, tablet, and mobile |
-| Local Storage | No server required - works offline |
+* Submit maintenance tickets digitally
+* Upload photos of issues
+* Categorize and prioritize requests
+* Track progress from open to resolved
 
 ---
 
-## Slide 5: Technical Highlights
+# Features
 
-# Built with Modern Web Standards
-
-- **HTML5** - Semantic, accessible markup
-- **CSS3** - Grid layout, custom properties, responsive design
-- **Vanilla JavaScript** - No dependencies, fast and lightweight
-- **LocalStorage** - Client-side persistence
-- **Zero Build Step** - Open and run, no compilation needed
+* Ticket creation
+* Image upload
+* Priority management
+* Category filtering
+* Status tracking
+* Responsive design
 
 ---
 
-## Slide 6: Get Started
+# Benefits
 
-# Ready to Simplify Maintenance?
+* Faster response time
+* Better maintenance records
+* Reduced manual work
+* Improved communication between departments
 
-1. Open `index.html` in any modern browser
-2. Start submitting maintenance tickets
-3. Track and resolve issues efficiently
+---
 
-**No installation. No server. No cost.**
+# Future Improvements
 
-GitHub: `ai-maintenance-ticket-assistant`
+* AI issue categorization
+* Email notifications
+* Dashboard reporting
+* Mobile application
