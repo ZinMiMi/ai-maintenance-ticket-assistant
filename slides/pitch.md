@@ -54,3 +54,11 @@ Hotel Maintenance Management System
 * Email notifications
 * Dashboard reporting
 * Mobile application
+---
+
+# Demo
+
+- Create maintenance tickets
+- Upload issue photos
+- Track ticket status
+- Filter by category and priority
