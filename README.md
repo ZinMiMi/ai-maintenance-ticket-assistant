@@ -7,6 +7,7 @@ A responsive web application for managing hotel operations, maintenance requests
 
 ## Features
 
+- **Operations Dashboard** - Real-time overview of ticket statistics by status, department, and priority
 - **Ticket Submission** - Create maintenance and operations tickets with title, description, department, category, and priority
 - **Department Management** - Route tickets to appropriate departments (Engineering, Housekeeping, Front Office, IT, F&B, Security, HR, Finance)
 - **Image Upload** - Attach photos of issues via drag-and-drop or file picker
@@ -15,6 +16,16 @@ A responsive web application for managing hotel operations, maintenance requests
 - **Ticket Management** - View, filter, and resolve tickets
 - **Persistent Storage** - Tickets saved in localStorage
 - **Responsive Design** - Works on desktop and mobile devices
+
+## Dashboard
+
+The Operations Dashboard provides at-a-glance metrics:
+
+- **Total Tickets** - All tickets in the system
+- **Open Tickets** - Tickets awaiting resolution
+- **Resolved Tickets** - Completed tickets
+- **By Department** - Ticket distribution across hotel departments
+- **By Priority** - Breakdown of tickets by urgency level
 
 ## Departments
 

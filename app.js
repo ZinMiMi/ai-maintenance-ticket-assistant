@@ -19,6 +19,7 @@ class HotelOperationsApp {
 
     this.bindEvents();
     this.renderTickets();
+    this.renderDashboard();
   }
 
   bindEvents() {
@@ -81,6 +82,7 @@ class HotelOperationsApp {
     this.tickets.unshift(ticket);
     this.saveTickets();
     this.renderTickets();
+    this.renderDashboard();
     this.form.reset();
     this.imagePreview.style.display = 'none';
     this.uploadPlaceholder.style.display = 'flex';
@@ -92,6 +94,7 @@ class HotelOperationsApp {
     this.tickets = this.tickets.filter(t => t.id !== id);
     this.saveTickets();
     this.renderTickets();
+    this.renderDashboard();
     this.showToast('Ticket deleted');
   }
 
@@ -101,6 +104,7 @@ class HotelOperationsApp {
       ticket.status = ticket.status === 'open' ? 'resolved' : 'open';
       this.saveTickets();
       this.renderTickets();
+      this.renderDashboard();
     }
   }
 
@@ -220,6 +224,51 @@ class HotelOperationsApp {
   loadTickets() {
     const saved = localStorage.getItem('hotelOperationsTickets');
     return saved ? JSON.parse(saved) : [];
+  }
+
+  renderDashboard() {
+    const total = this.tickets.length;
+    const open = this.tickets.filter(t => t.status === 'open').length;
+    const resolved = this.tickets.filter(t => t.status === 'resolved').length;
+
+    document.getElementById('statTotal').textContent = total;
+    document.getElementById('statOpen').textContent = open;
+    document.getElementById('statResolved').textContent = resolved;
+
+    // Department chart
+    const departments = ['engineering', 'housekeeping', 'front-office', 'it', 'fb', 'security', 'hr', 'finance'];
+    const deptCounts = departments.map(dept => ({
+      name: this.formatDepartment(dept),
+      icon: this.getDepartmentIcon(dept),
+      count: this.tickets.filter(t => t.department === dept).length
+    }));
+    this.renderBarChart('departmentChart', deptCounts);
+
+    // Priority chart
+    const priorities = ['critical', 'high', 'medium', 'low'];
+    const priorityCounts = priorities.map(priority => ({
+      name: priority.charAt(0).toUpperCase() + priority.slice(1),
+      count: this.tickets.filter(t => t.priority === priority).length
+    }));
+    this.renderBarChart('priorityChart', priorityCounts);
+  }
+
+  renderBarChart(containerId, data) {
+    const container = document.getElementById(containerId);
+    const maxCount = Math.max(...data.map(d => d.count), 1);
+
+    container.innerHTML = data.map(item => {
+      const percentage = (item.count / maxCount) * 100;
+      return `
+        <div class="chart-row">
+          <span class="chart-label">${item.icon || ''} ${item.name}</span>
+          <div class="chart-bar-container">
+            <div class="chart-bar" style="width: ${percentage}%"></div>
+            <span class="chart-value">${item.count}</span>
+          </div>
+        </div>
+      `;
+    }).join('');
   }
 
   showToast(message) {

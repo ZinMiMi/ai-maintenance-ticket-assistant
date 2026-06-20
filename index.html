@@ -14,6 +14,45 @@
     </header>
 
     <main class="main-content">
+      <!-- Operations Dashboard -->
+      <section class="dashboard-section" id="dashboard">
+        <h2>📊 Operations Dashboard</h2>
+        <div class="dashboard-stats">
+          <div class="stat-card stat-total">
+            <span class="stat-icon">📋</span>
+            <div class="stat-info">
+              <span class="stat-value" id="statTotal">0</span>
+              <span class="stat-label">Total Tickets</span>
+            </div>
+          </div>
+          <div class="stat-card stat-open">
+            <span class="stat-icon">🔓</span>
+            <div class="stat-info">
+              <span class="stat-value" id="statOpen">0</span>
+              <span class="stat-label">Open</span>
+            </div>
+          </div>
+          <div class="stat-card stat-resolved">
+            <span class="stat-icon">✅</span>
+            <div class="stat-info">
+              <span class="stat-value" id="statResolved">0</span>
+              <span class="stat-label">Resolved</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-charts">
+          <div class="chart-card">
+            <h3>By Department</h3>
+            <div id="departmentChart" class="chart-bars"></div>
+          </div>
+          <div class="chart-card">
+            <h3>By Priority</h3>
+            <div id="priorityChart" class="chart-bars"></div>
+          </div>
+        </div>
+      </section>
+
       <!-- Ticket Submission Form -->
       <section class="ticket-form-section">
         <h2>Submit New Ticket</h2>

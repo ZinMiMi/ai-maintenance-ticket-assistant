@@ -359,6 +359,141 @@ body {
   margin-top: 8px;
 }
 
+/* Dashboard Section */
+.dashboard-section {
+  grid-column: 1 / -1;
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-section h2 {
+  font-size: 1.4rem;
+  margin-bottom: 20px;
+  color: var(--gray-700);
+}
+
+.dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 600px) {
+  .dashboard-stats {
+    grid-template-columns: 1fr;
+  }
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  border-radius: 10px;
+  background: var(--gray-50);
+}
+
+.stat-icon {
+  font-size: 2rem;
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: var(--gray-500);
+  margin-top: 4px;
+}
+
+.stat-total .stat-value {
+  color: var(--primary);
+}
+
+.stat-open .stat-value {
+  color: var(--warning);
+}
+
+.stat-resolved .stat-value {
+  color: var(--success);
+}
+
+.dashboard-charts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 700px) {
+  .dashboard-charts {
+    grid-template-columns: 1fr;
+  }
+}
+
+.chart-card {
+  background: var(--gray-50);
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.chart-card h3 {
+  font-size: 1rem;
+  color: var(--gray-700);
+  margin-bottom: 16px;
+}
+
+.chart-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.chart-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.chart-label {
+  min-width: 100px;
+  font-size: 0.85rem;
+  color: var(--gray-700);
+  white-space: nowrap;
+}
+
+.chart-bar-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chart-bar {
+  height: 20px;
+  background: linear-gradient(90deg, var(--primary), #7c3aed);
+  border-radius: 4px;
+  min-width: 4px;
+  transition: width 0.3s ease;
+}
+
+.chart-value {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--gray-700);
+  min-width: 20px;
+}
+
 /* Toast Notification */
 .toast {
   position: fixed;
