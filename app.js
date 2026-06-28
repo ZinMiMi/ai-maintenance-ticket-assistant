@@ -9,7 +9,7 @@ class HotelOperationsApp {
     this.tickets = this.loadTickets();
     this.users = this.loadUsers();
     this.currentUser = this.getCurrentUser();
-    this.classifier = new AITicketClassifier();
+    this.router = new AIRouter();
     this.init();
   }
 
@@ -26,7 +26,6 @@ class HotelOperationsApp {
     this.filterPriority = document.getElementById('filterPriority');
     this.aiAnalyzeBtn = document.getElementById('aiAnalyzeBtn');
     this.aiSuggestions = document.getElementById('aiSuggestions');
-    this.lastClassification = null;
 
     this.bindNavigation();
     this.bindLogin();
@@ -226,12 +225,11 @@ class HotelOperationsApp {
   bindEvents() {
     this.form.addEventListener('submit', (e) => this.handleSubmit(e));
     this.imageUpload.addEventListener('change', (e) => this.handleImageUpload(e));
-    this.filterStatus.addEventListener('change', () => this.renderTickets());
-    this.filterDepartment.addEventListener('change', () => this.renderTickets());
-    this.filterCategory.addEventListener('change', () => this.renderTickets());
-    this.filterPriority.addEventListener('change', () => this.renderTickets());
-    this.aiAnalyzeBtn.addEventListener('click', () => this.analyzeTicket());
-    document.getElementById('applySuggestions').addEventListener('click', () => this.applySuggestions());
+    this.filterStatus?.addEventListener('change', () => this.renderTickets());
+    this.filterDepartment?.addEventListener('change', () => this.renderTickets());
+    this.filterCategory?.addEventListener('change', () => this.renderTickets());
+    this.filterPriority?.addEventListener('change', () => this.renderTickets());
+    this.aiAnalyzeBtn?.addEventListener('click', () => this.analyzeTicket());
 
     // Drag and drop
     const uploadArea = document.getElementById('uploadArea');
@@ -271,26 +269,36 @@ class HotelOperationsApp {
   handleSubmit(e) {
     e.preventDefault();
 
+    const title = document.getElementById('issueTitle').value;
+    const description = document.getElementById('issueDescription').value;
+
+    // AI classification
+    const classification = this.router.classify(title, description);
+    const dept = classification.department.value;
+    const category = classification.category.value;
+    const priority = classification.priority.value;
+    const eta = classification.eta;
+
     const now = new Date().toISOString();
-    const dept = document.getElementById('department').value;
     const ticket = {
       id: Date.now(),
-      title: document.getElementById('issueTitle').value,
-      description: document.getElementById('issueDescription').value,
+      title: title,
+      description: description,
       department: dept,
-      category: document.getElementById('category').value,
-      priority: document.getElementById('priority').value,
+      category: category,
+      priority: priority,
       assignedTo: null,
       assignedDepartment: dept,
       createdBy: this.currentUser ? this.currentUser.id : null,
       image: this.imagePreview.style.display !== 'none' ? this.imagePreview.src : null,
       status: 'open',
+      eta: eta,
       createdAt: now,
       updatedAt: now,
       history: [{
         status: 'open',
         timestamp: now,
-        note: 'Ticket created'
+        note: `Ticket created — Routed to ${this.formatDepartment(dept)} (ETA: ${eta})`
       }]
     };
 
@@ -301,8 +309,9 @@ class HotelOperationsApp {
     this.form.reset();
     this.imagePreview.style.display = 'none';
     this.uploadPlaceholder.style.display = 'flex';
+    document.getElementById('aiSuggestions').style.display = 'none';
 
-    this.showToast('Ticket submitted successfully!');
+    this.showToast(`Routed to ${this.formatDepartment(dept)} — ETA: ${eta}`);
   }
 
   deleteTicket(id) {
@@ -478,6 +487,7 @@ class HotelOperationsApp {
         </div>
         <div class="ticket-time">
           <span>Created: ${this.formatDate(ticket.createdAt)}</span>
+          ${ticket.eta ? `<span> • ETA: ${ticket.eta}</span>` : ''}
           ${ticket.updatedAt !== ticket.createdAt ? `<span> • Updated: ${this.formatDate(ticket.updatedAt)}</span>` : ''}
         </div>
         <div id="history-${ticket.id}" class="ticket-history" style="display: none;">
@@ -709,14 +719,12 @@ class HotelOperationsApp {
     this.aiAnalyzeBtn.disabled = true;
     this.aiAnalyzeBtn.innerHTML = '<span>🔄 Analyzing...</span>';
 
-    // Simulate AI processing delay (remove when using real API)
     setTimeout(() => {
-      const result = this.classifier.classify(title, description);
-      this.lastClassification = result;
+      const result = this.router.classify(title, description);
       this.displaySuggestions(result);
 
       this.aiAnalyzeBtn.disabled = false;
-      this.aiAnalyzeBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M12 2a4 4 0 0 1 4 4c0 1.95-1.4 3.57-3.25 3.92L12 22"/><path d="M12 2a4 4 0 0 0-4 4c0 1.95 1.4 3.57 3.25 3.92"/><circle cx="12" cy="14" r="2"/></svg><span>AI Analyze</span>';
+      this.aiAnalyzeBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M12 2a4 4 0 0 1 4 4c0 1.95-1.4 3.57-3.25 3.92L12 22"/><path d="M12 2a4 4 0 0 0-4 4c0 1.95 1.4 3.57 3.25 3.92"/><circle cx="12" cy="14" r="2"/></svg><span>AI Preview</span>';
     }, 500);
   }
 
@@ -725,28 +733,19 @@ class HotelOperationsApp {
     const dept = document.getElementById('aiDept');
     const cat = document.getElementById('aiCat');
     const priority = document.getElementById('aiPriority');
+    const eta = document.getElementById('aiETA');
     const confidence = document.getElementById('aiConfidence');
 
     dept.textContent = this.formatDepartment(result.department.value);
     cat.textContent = result.category.value;
     priority.textContent = result.priority.value;
+    eta.textContent = result.eta;
     confidence.textContent = `${result.confidence}% confident`;
 
     // Color code priority
     priority.className = 'ai-value priority-' + result.priority.value;
 
     suggestions.style.display = 'block';
-  }
-
-  applySuggestions() {
-    if (!this.lastClassification) return;
-
-    const result = this.lastClassification;
-    document.getElementById('department').value = result.department.value;
-    document.getElementById('category').value = result.category.value;
-    document.getElementById('priority').value = result.priority.value;
-
-    this.showToast('AI suggestions applied');
   }
 
   renderDashboard() {
