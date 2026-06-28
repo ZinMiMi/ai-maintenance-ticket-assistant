@@ -431,7 +431,7 @@ class HotelOperationsApp {
 
     // Show loading state
     this.aiAnalyzeBtn.disabled = true;
-    this.aiAnalyzeBtn.innerHTML = '🔄 Analyzing...';
+    this.aiAnalyzeBtn.innerHTML = '<span>🔄 Analyzing...</span>';
 
     // Simulate AI processing delay (remove when using real API)
     setTimeout(() => {
@@ -440,7 +440,7 @@ class HotelOperationsApp {
       this.displaySuggestions(result);
 
       this.aiAnalyzeBtn.disabled = false;
-      this.aiAnalyzeBtn.innerHTML = '🤖 AI Analyze';
+      this.aiAnalyzeBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M12 2a4 4 0 0 1 4 4c0 1.95-1.4 3.57-3.25 3.92L12 22"/><path d="M12 2a4 4 0 0 0-4 4c0 1.95 1.4 3.57 3.25 3.92"/><circle cx="12" cy="14" r="2"/></svg><span>AI Analyze</span>';
     }, 500);
   }
 
