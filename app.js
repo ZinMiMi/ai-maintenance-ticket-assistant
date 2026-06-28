@@ -196,6 +196,8 @@ class HotelOperationsApp {
     document.getElementById('sidebarOverlay')?.classList.remove('open');
     // Update URL hash
     window.location.hash = sectionId;
+    // Render section-specific content
+    if (sectionId === 'users') this.renderUsers();
   }
 
   bindEvents() {
@@ -620,6 +622,55 @@ class HotelOperationsApp {
 
   canCreateTicket() {
     return this.currentUser && this.currentUser.role !== 'Guest';
+  }
+
+  renderUsers() {
+    const userList = document.getElementById('userList');
+    if (!userList) return;
+
+    const roles = ['Administrator', 'Department Manager', 'Staff', 'Guest'];
+    const departments = ['all', 'engineering', 'housekeeping', 'front-office', 'it', 'fb', 'security', 'hr', 'finance'];
+
+    userList.innerHTML = `
+      <div class="user-table">
+        <div class="user-table-header">
+          <span>Name</span>
+          <span>Email</span>
+          <span>Role</span>
+          <span>Department</span>
+        </div>
+        ${this.users.map(user => `
+          <div class="user-table-row">
+            <span class="user-table-name">${this.escapeHtml(user.name)}</span>
+            <span class="user-table-email">${this.escapeHtml(user.email)}</span>
+            <select class="user-role-select" onchange="app.updateUserRole(${user.id}, this.value)">
+              ${roles.map(r => `<option value="${r}" ${user.role === r ? 'selected' : ''}>${r}</option>`).join('')}
+            </select>
+            <select class="user-dept-select" onchange="app.updateUserDepartment(${user.id}, this.value)">
+              ${departments.map(d => `<option value="${d}" ${user.department === d ? 'selected' : ''}>${d === 'all' ? 'All Departments' : this.formatDepartment(d)}</option>`).join('')}
+            </select>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+
+  updateUserRole(userId, newRole) {
+    const user = this.users.find(u => u.id === userId);
+    if (user) {
+      user.role = newRole;
+      this.saveUsers();
+      this.showToast(`${user.name} role updated to ${newRole}`);
+    }
+  }
+
+  updateUserDepartment(userId, newDept) {
+    const user = this.users.find(u => u.id === userId);
+    if (user) {
+      user.department = newDept;
+      this.saveUsers();
+      this.showToast(`${user.name} department updated to ${newDept === 'all' ? 'All Departments' : this.formatDepartment(newDept)}`);
+    }
   }
 
   analyzeTicket() {

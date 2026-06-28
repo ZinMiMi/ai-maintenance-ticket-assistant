@@ -1702,3 +1702,66 @@ body {
 .btn-secondary:hover {
   background: var(--surface-alt);
 }
+
+/* ---- User Management ---- */
+
+.user-list {
+  padding: var(--space-lg);
+}
+
+.user-table {
+  width: 100%;
+}
+
+.user-table-header {
+  display: grid;
+  grid-template-columns: 1.5fr 2fr 1.5fr 1.5fr;
+  gap: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+}
+
+.user-table-row {
+  display: grid;
+  grid-template-columns: 1.5fr 2fr 1.5fr 1.5fr;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  align-items: center;
+  border-bottom: 1px solid var(--border-light);
+  font-size: 0.9rem;
+}
+
+.user-table-row:last-child {
+  border-bottom: none;
+}
+
+.user-table-name {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.user-table-email {
+  color: var(--text-secondary);
+}
+
+.user-role-select,
+.user-dept-select {
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  background: var(--surface);
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.user-role-select:focus,
+.user-dept-select:focus {
+  outline: none;
+  border-color: var(--primary);
+}
