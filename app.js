@@ -22,9 +22,100 @@ class HotelOperationsApp {
     this.aiSuggestions = document.getElementById('aiSuggestions');
     this.lastClassification = null;
 
+    this.bindNavigation();
     this.bindEvents();
     this.renderTickets();
     this.renderDashboard();
+    this.updateDateDisplay();
+  }
+
+  bindNavigation() {
+    // Sidebar nav items
+    document.querySelectorAll('.nav-item[data-section]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.navigateTo(link.dataset.section);
+      });
+    });
+
+    // Mobile menu toggle
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    if (mobileMenuBtn) {
+      mobileMenuBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('open');
+        sidebarOverlay.classList.toggle('open');
+      });
+    }
+    if (sidebarOverlay) {
+      sidebarOverlay.addEventListener('click', () => {
+        sidebar.classList.remove('open');
+        sidebarOverlay.classList.remove('open');
+      });
+    }
+
+    // Sidebar collapse
+    const collapseBtn = document.getElementById('sidebarCollapseBtn');
+    if (collapseBtn) {
+      collapseBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('collapsed');
+      });
+    }
+
+    // Theme toggle
+    const themeToggle = document.getElementById('themeToggle');
+    if (themeToggle) {
+      themeToggle.addEventListener('click', () => {
+        const html = document.documentElement;
+        const current = html.getAttribute('data-theme');
+        html.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+      });
+    }
+
+    // Global search
+    const globalSearch = document.getElementById('globalSearch');
+    if (globalSearch) {
+      globalSearch.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase();
+        if (query.length > 0) {
+          this.navigateTo('tickets');
+          this.filterStatus.value = 'all';
+          this.filterDepartment.value = 'all';
+          this.filterCategory.value = 'all';
+          this.filterPriority.value = 'all';
+          this.renderTickets();
+          const cards = this.ticketList.querySelectorAll('.ticket-card');
+          cards.forEach(card => {
+            const text = card.textContent.toLowerCase();
+            card.style.display = text.includes(query) ? '' : 'none';
+          });
+        }
+      });
+    }
+
+    // Handle hash navigation on load
+    const hash = window.location.hash.replace('#', '');
+    if (hash && document.getElementById(`section-${hash}`)) {
+      this.navigateTo(hash);
+    }
+  }
+
+  navigateTo(sectionId) {
+    // Hide all sections
+    document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+    // Show target section
+    const target = document.getElementById(`section-${sectionId}`);
+    if (target) target.classList.add('active');
+    // Update active nav item
+    document.querySelectorAll('.nav-item[data-section]').forEach(link => {
+      link.classList.toggle('active', link.dataset.section === sectionId);
+    });
+    // Close mobile sidebar
+    document.getElementById('sidebar')?.classList.remove('open');
+    document.getElementById('sidebarOverlay')?.classList.remove('open');
+    // Update URL hash
+    window.location.hash = sectionId;
   }
 
   bindEvents() {
@@ -174,9 +265,21 @@ class HotelOperationsApp {
     });
   }
 
+  updateDateDisplay() {
+    const dateEl = document.getElementById('currentDate');
+    if (dateEl) {
+      dateEl.textContent = new Date().toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    }
+  }
+
   renderTickets() {
     const filtered = this.getFilteredTickets();
-    this.ticketCount.textContent = filtered.length;
+    this.ticketCount.textContent = `${filtered.length} ticket${filtered.length !== 1 ? 's' : ''}`;
 
     if (filtered.length === 0) {
       this.ticketList.innerHTML = `
