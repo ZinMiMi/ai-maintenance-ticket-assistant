@@ -202,6 +202,9 @@ body {
 .sidebar-footer {
   padding: var(--space-md) var(--space-lg);
   border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
 }
 
 .sidebar-user {
@@ -1534,4 +1537,84 @@ body {
   .stats-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* ---- Login Section ---- */
+
+.login-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  padding: var(--space-2xl);
+  text-align: center;
+}
+
+.login-header {
+  margin-bottom: var(--space-xl);
+}
+
+.login-logo {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: var(--space-sm);
+}
+
+.login-header h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--space-xs);
+}
+
+.login-header p {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.login-card .form-group {
+  text-align: left;
+}
+
+.login-card .submit-btn {
+  margin-top: var(--space-md);
+}
+
+.login-hint {
+  margin-top: var(--space-md);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* ---- Logout Button ---- */
+
+.sidebar-logout-btn {
+  background: none;
+  border: none;
+  color: var(--gray-400);
+  cursor: pointer;
+  padding: var(--space-xs);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s, background 0.15s;
+  margin-left: auto;
+}
+
+.sidebar-logout-btn:hover {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.sidebar-user {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex: 1;
 }

@@ -2,7 +2,13 @@
 
 class HotelOperationsApp {
   constructor() {
+    this.TICKETS_KEY = 'hotelOperationsTickets';
+    this.USERS_KEY = 'hotelOperationsUsers';
+    this.SESSION_KEY = 'hotelOperationsSession';
+
     this.tickets = this.loadTickets();
+    this.users = this.loadUsers();
+    this.currentUser = this.getCurrentUser();
     this.classifier = new AITicketClassifier();
     this.init();
   }
@@ -23,10 +29,84 @@ class HotelOperationsApp {
     this.lastClassification = null;
 
     this.bindNavigation();
+    this.bindLogin();
     this.bindEvents();
+
+    if (this.currentUser) {
+      this.showApp();
+    } else {
+      this.showLogin();
+    }
+
+    this.updateDateDisplay();
+  }
+
+  showLogin() {
+    document.getElementById('section-login')?.classList.add('active');
+    document.getElementById('sidebar').style.display = 'none';
+    document.querySelector('.topbar').style.display = 'none';
+    document.getElementById('mainLayout').style.marginLeft = '0';
+    // Hide all other sections
+    document.querySelectorAll('.page-section:not(#section-login)').forEach(s => s.classList.remove('active'));
+  }
+
+  showApp() {
+    document.getElementById('section-login')?.classList.remove('active');
+    document.getElementById('sidebar').style.display = '';
+    document.querySelector('.topbar').style.display = '';
+    document.getElementById('mainLayout').style.marginLeft = '';
+    this.updateUserDisplay();
     this.renderTickets();
     this.renderDashboard();
-    this.updateDateDisplay();
+    // Navigate to dashboard if on login or no hash
+    const hash = window.location.hash.replace('#', '');
+    if (!hash || hash === 'login') {
+      this.navigateTo('dashboard');
+    } else {
+      this.navigateTo(hash);
+    }
+  }
+
+  updateUserDisplay() {
+    if (!this.currentUser) return;
+    const initials = this.currentUser.name.split(' ').map(w => w[0]).join('').toUpperCase();
+    // Sidebar user
+    const sidebarAvatar = document.querySelector('.sidebar-footer .user-avatar');
+    const sidebarName = document.querySelector('.sidebar-footer .user-name');
+    const sidebarRole = document.querySelector('.sidebar-footer .user-role');
+    if (sidebarAvatar) sidebarAvatar.textContent = initials;
+    if (sidebarName) sidebarName.textContent = this.currentUser.name;
+    if (sidebarRole) sidebarRole.textContent = this.currentUser.role;
+    // Topbar user
+    const topbarAvatar = document.querySelector('.topbar .user-avatar-sm');
+    if (topbarAvatar) topbarAvatar.textContent = initials;
+  }
+
+  bindLogin() {
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+      loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const email = document.getElementById('loginEmail').value;
+        const user = this.users.find(u => u.email === email);
+        if (user) {
+          this.setCurrentUser(user);
+          this.showApp();
+          this.showToast(`Welcome, ${user.name}!`);
+        } else {
+          this.showToast('User not found');
+        }
+      });
+    }
+
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', () => {
+        this.logout();
+        window.location.hash = '';
+        window.location.reload();
+      });
+    }
   }
 
   bindNavigation() {
@@ -412,12 +492,87 @@ class HotelOperationsApp {
   }
 
   saveTickets() {
-    localStorage.setItem('hotelOperationsTickets', JSON.stringify(this.tickets));
+    localStorage.setItem(this.TICKETS_KEY, JSON.stringify(this.tickets));
   }
 
   loadTickets() {
-    const saved = localStorage.getItem('hotelOperationsTickets');
+    const saved = localStorage.getItem(this.TICKETS_KEY);
     return saved ? JSON.parse(saved) : [];
+  }
+
+  // ---- User Management ----
+
+  loadUsers() {
+    const saved = localStorage.getItem(this.USERS_KEY);
+    if (saved) return JSON.parse(saved);
+    this.seedDemoUsers();
+    return JSON.parse(localStorage.getItem(this.USERS_KEY));
+  }
+
+  saveUsers() {
+    localStorage.setItem(this.USERS_KEY, JSON.stringify(this.users));
+  }
+
+  seedDemoUsers() {
+    const demoUsers = [
+      { id: 1, name: 'Admin User', email: 'admin@hotel.com', role: 'Administrator', department: 'all' },
+      { id: 2, name: 'Eng Manager', email: 'eng.manager@hotel.com', role: 'Department Manager', department: 'engineering' },
+      { id: 3, name: 'Engineer One', email: 'engineer1@hotel.com', role: 'Staff', department: 'engineering' },
+      { id: 4, name: 'HK Manager', email: 'hk.manager@hotel.com', role: 'Department Manager', department: 'housekeeping' },
+      { id: 5, name: 'Housekeeper One', email: 'housekeeping1@hotel.com', role: 'Staff', department: 'housekeeping' }
+    ];
+    localStorage.setItem(this.USERS_KEY, JSON.stringify(demoUsers));
+  }
+
+  getCurrentUser() {
+    const saved = localStorage.getItem(this.SESSION_KEY);
+    return saved ? JSON.parse(saved) : null;
+  }
+
+  setCurrentUser(user) {
+    this.currentUser = user;
+    localStorage.setItem(this.SESSION_KEY, JSON.stringify(user));
+  }
+
+  logout() {
+    this.currentUser = null;
+    localStorage.removeItem(this.SESSION_KEY);
+  }
+
+  getUsersByDepartment(department) {
+    return this.users.filter(u => u.department === department || u.department === 'all');
+  }
+
+  getStaffByDepartment(department) {
+    return this.users.filter(u => u.department === department && u.role === 'Staff');
+  }
+
+  isAdmin() {
+    return this.currentUser && this.currentUser.role === 'Administrator';
+  }
+
+  isManager() {
+    return this.currentUser && this.currentUser.role === 'Department Manager';
+  }
+
+  isStaff() {
+    return this.currentUser && this.currentUser.role === 'Staff';
+  }
+
+  isGuest() {
+    return this.currentUser && this.currentUser.role === 'Guest';
+  }
+
+  canAssign() {
+    return this.isAdmin() || this.isManager();
+  }
+
+  canDelete() {
+    return this.isAdmin();
+  }
+
+  canCreateTicket() {
+    return this.currentUser && this.currentUser.role !== 'Guest';
   }
 
   analyzeTicket() {
