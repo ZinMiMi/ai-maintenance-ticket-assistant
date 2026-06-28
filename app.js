@@ -333,13 +333,33 @@ class HotelOperationsApp {
     }
   }
 
+  getVisibleTickets() {
+    if (!this.currentUser) return [];
+    const user = this.currentUser;
+
+    if (user.role === 'Administrator') {
+      return this.tickets;
+    }
+    if (user.role === 'Department Manager') {
+      return this.tickets.filter(t => t.assignedDepartment === user.department || t.department === user.department);
+    }
+    if (user.role === 'Staff') {
+      return this.tickets.filter(t => t.assignedTo === user.name);
+    }
+    if (user.role === 'Guest') {
+      return this.tickets.filter(t => t.createdBy === user.id);
+    }
+    return [];
+  }
+
   getFilteredTickets() {
+    const visible = this.getVisibleTickets();
     const status = this.filterStatus.value;
     const department = this.filterDepartment.value;
     const category = this.filterCategory.value;
     const priority = this.filterPriority.value;
 
-    return this.tickets.filter(ticket => {
+    return visible.filter(ticket => {
       if (status !== 'all' && ticket.status !== status) return false;
       if (department !== 'all' && ticket.department !== department) return false;
       if (category !== 'all' && ticket.category !== category) return false;
@@ -379,22 +399,18 @@ class HotelOperationsApp {
         <div class="ticket-header">
           <span class="ticket-title">${this.escapeHtml(ticket.title)}</span>
           <div class="ticket-actions">
-            <select class="status-select status-${ticket.status}" onchange="app.updateStatus(${ticket.id}, this.value)">
+            <select class="status-select status-${ticket.status}" onchange="app.updateStatus(${ticket.id}, this.value)" ${this.isGuest() ? 'disabled' : ''}>
               <option value="open" ${ticket.status === 'open' ? 'selected' : ''}>Open</option>
               <option value="in-progress" ${ticket.status === 'in-progress' ? 'selected' : ''}>In Progress</option>
               <option value="pending" ${ticket.status === 'pending' ? 'selected' : ''}>Pending</option>
               <option value="resolved" ${ticket.status === 'resolved' ? 'selected' : ''}>Resolved</option>
               <option value="closed" ${ticket.status === 'closed' ? 'selected' : ''}>Closed</option>
             </select>
-            <button class="btn-icon" onclick="app.assignTicket(${ticket.id})" title="Assign">
-              👤
-            </button>
+            ${this.canAssign() ? `<button class="btn-icon" onclick="app.assignTicket(${ticket.id})" title="Assign">👤</button>` : ''}
             <button class="btn-icon" onclick="app.toggleHistory(${ticket.id})" title="History">
               📜
             </button>
-            <button class="btn-icon" onclick="app.deleteTicket(${ticket.id})" title="Delete">
-              🗑️
-            </button>
+            ${this.canDelete() ? `<button class="btn-icon" onclick="app.deleteTicket(${ticket.id})" title="Delete">🗑️</button>` : ''}
           </div>
         </div>
         <p class="ticket-description">${this.escapeHtml(ticket.description)}</p>
@@ -632,12 +648,13 @@ class HotelOperationsApp {
   }
 
   renderDashboard() {
-    const total = this.tickets.length;
-    const open = this.tickets.filter(t => t.status === 'open').length;
-    const inProgress = this.tickets.filter(t => t.status === 'in-progress').length;
-    const pending = this.tickets.filter(t => t.status === 'pending').length;
-    const resolved = this.tickets.filter(t => t.status === 'resolved').length;
-    const closed = this.tickets.filter(t => t.status === 'closed').length;
+    const visible = this.getVisibleTickets();
+    const total = visible.length;
+    const open = visible.filter(t => t.status === 'open').length;
+    const inProgress = visible.filter(t => t.status === 'in-progress').length;
+    const pending = visible.filter(t => t.status === 'pending').length;
+    const resolved = visible.filter(t => t.status === 'resolved').length;
+    const closed = visible.filter(t => t.status === 'closed').length;
 
     document.getElementById('statTotal').textContent = total;
     document.getElementById('statOpen').textContent = open;
@@ -646,12 +663,15 @@ class HotelOperationsApp {
     document.getElementById('statResolved').textContent = resolved;
     document.getElementById('statClosed').textContent = closed;
 
-    // Department chart
-    const departments = ['engineering', 'housekeeping', 'front-office', 'it', 'fb', 'security', 'hr', 'finance'];
+    // Department chart - for managers, show only their department
+    let departments = ['engineering', 'housekeeping', 'front-office', 'it', 'fb', 'security', 'hr', 'finance'];
+    if (this.isManager()) {
+      departments = [this.currentUser.department];
+    }
     const deptCounts = departments.map(dept => ({
       name: this.formatDepartment(dept),
       icon: this.getDepartmentIcon(dept),
-      count: this.tickets.filter(t => t.department === dept).length
+      count: visible.filter(t => t.department === dept).length
     }));
     this.renderBarChart('departmentChart', deptCounts);
 
@@ -659,7 +679,7 @@ class HotelOperationsApp {
     const priorities = ['critical', 'high', 'medium', 'low'];
     const priorityCounts = priorities.map(priority => ({
       name: priority.charAt(0).toUpperCase() + priority.slice(1),
-      count: this.tickets.filter(t => t.priority === priority).length
+      count: visible.filter(t => t.priority === priority).length
     }));
     this.renderBarChart('priorityChart', priorityCounts);
   }
