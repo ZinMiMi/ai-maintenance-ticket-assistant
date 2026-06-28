@@ -308,22 +308,50 @@ class HotelOperationsApp {
 
   assignTicket(id) {
     const ticket = this.tickets.find(t => t.id === id);
-    if (ticket) {
-      const assignedTo = prompt('Assign to:', ticket.assignedTo || '');
-      if (assignedTo !== null) {
-        const now = new Date().toISOString();
-        ticket.assignedTo = assignedTo || null;
-        ticket.updatedAt = now;
-        ticket.history.push({
-          status: ticket.status,
-          timestamp: now,
-          note: assignedTo ? `Assigned to ${assignedTo}` : 'Assignment removed'
-        });
-        this.saveTickets();
-        this.renderTickets();
-        this.showToast(assignedTo ? `Ticket assigned to ${assignedTo}` : 'Assignment removed');
-      }
+    if (!ticket) return;
+
+    this.assignTicketId = id;
+    document.getElementById('assignTicketTitle').textContent = ticket.title;
+
+    // Populate staff dropdown based on ticket department
+    const staffSelect = document.getElementById('assignStaffSelect');
+    const dept = ticket.assignedDepartment || ticket.department;
+    const staff = this.getStaffByDepartment(dept);
+    staffSelect.innerHTML = '<option value="">Select staff...</option>' +
+      staff.map(u => `<option value="${this.escapeHtml(u.name)}" ${ticket.assignedTo === u.name ? 'selected' : ''}>${this.escapeHtml(u.name)}</option>`).join('');
+
+    document.getElementById('assignModal').style.display = 'flex';
+  }
+
+  closeAssignModal() {
+    document.getElementById('assignModal').style.display = 'none';
+    this.assignTicketId = null;
+  }
+
+  confirmAssign() {
+    const staffSelect = document.getElementById('assignStaffSelect');
+    const assignedTo = staffSelect.value;
+    if (!assignedTo) {
+      this.showToast('Please select a staff member');
+      return;
     }
+
+    const ticket = this.tickets.find(t => t.id === this.assignTicketId);
+    if (ticket) {
+      const now = new Date().toISOString();
+      ticket.assignedTo = assignedTo;
+      ticket.updatedAt = now;
+      ticket.history.push({
+        status: ticket.status,
+        timestamp: now,
+        note: `Assigned to ${assignedTo}`
+      });
+      this.saveTickets();
+      this.renderTickets();
+      this.renderDashboard();
+      this.showToast(`Ticket assigned to ${assignedTo}`);
+    }
+    this.closeAssignModal();
   }
 
   toggleHistory(id) {

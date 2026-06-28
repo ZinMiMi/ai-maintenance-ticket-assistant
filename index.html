@@ -429,6 +429,29 @@
     </div>
   </div>
 
+  <!-- Assign Ticket Modal -->
+  <div class="modal-overlay" id="assignModal" style="display: none;">
+    <div class="modal glass-card">
+      <div class="modal-header">
+        <h3>Assign Ticket</h3>
+        <button class="modal-close" onclick="app.closeAssignModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-ticket-title" id="assignTicketTitle"></p>
+        <div class="form-group">
+          <label for="assignStaffSelect">Assign to Staff Member</label>
+          <select id="assignStaffSelect">
+            <option value="">Select staff...</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="app.closeAssignModal()">Cancel</button>
+        <button class="submit-btn" onclick="app.confirmAssign()">Assign</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Mobile sidebar overlay -->
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
