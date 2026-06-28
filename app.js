@@ -739,7 +739,9 @@ class HotelOperationsApp {
       { id: 2, name: 'Eng Manager', email: 'eng.manager@hotel.com', role: 'Department Manager', department: 'engineering' },
       { id: 3, name: 'Engineer One', email: 'engineer1@hotel.com', role: 'Staff', department: 'engineering' },
       { id: 4, name: 'HK Manager', email: 'hk.manager@hotel.com', role: 'Department Manager', department: 'housekeeping' },
-      { id: 5, name: 'Housekeeper One', email: 'housekeeping1@hotel.com', role: 'Staff', department: 'housekeeping' }
+      { id: 5, name: 'Housekeeper One', email: 'housekeeping1@hotel.com', role: 'Staff', department: 'housekeeping' },
+      { id: 6, name: 'FO Manager', email: 'fo.manager@hotel.com', role: 'Department Manager', department: 'front-office' },
+      { id: 7, name: 'Finance Staff', email: 'finance1@hotel.com', role: 'Staff', department: 'finance' }
     ];
     localStorage.setItem(this.USERS_KEY, JSON.stringify(demoUsers));
   }
