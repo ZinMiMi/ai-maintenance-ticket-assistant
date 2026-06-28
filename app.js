@@ -247,15 +247,18 @@ class HotelOperationsApp {
     e.preventDefault();
 
     const now = new Date().toISOString();
+    const dept = document.getElementById('department').value;
     const ticket = {
       id: Date.now(),
       title: document.getElementById('issueTitle').value,
       description: document.getElementById('issueDescription').value,
-      department: document.getElementById('department').value,
+      department: dept,
       category: document.getElementById('category').value,
       priority: document.getElementById('priority').value,
-      assignedTo: document.getElementById('assignedTo').value || null,
-      image: this.imagePreview.src || null,
+      assignedTo: null,
+      assignedDepartment: dept,
+      createdBy: this.currentUser ? this.currentUser.id : null,
+      image: this.imagePreview.style.display !== 'none' ? this.imagePreview.src : null,
       status: 'open',
       createdAt: now,
       updatedAt: now,
