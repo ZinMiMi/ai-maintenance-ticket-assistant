@@ -797,53 +797,231 @@ class HotelOperationsApp {
     return this.currentUser && this.currentUser.role !== 'Guest';
   }
 
+  // ---- User Management ----
+
+  userPage = 1;
+  userPageSize = 10;
+  userSortAsc = true;
+
+  filterUsers() {
+    this.userPage = 1;
+    this.renderUsers();
+  }
+
+  toggleUserSort() {
+    this.userSortAsc = !this.userSortAsc;
+    this.renderUsers();
+  }
+
+  getFilteredUsers() {
+    const search = (document.getElementById('userSearch')?.value || '').toLowerCase();
+    const role = document.getElementById('userFilterRole')?.value || 'all';
+    const dept = document.getElementById('userFilterDept')?.value || 'all';
+
+    let filtered = [...this.users];
+
+    if (search) {
+      filtered = filtered.filter(u =>
+        u.name.toLowerCase().includes(search) ||
+        u.email.toLowerCase().includes(search)
+      );
+    }
+    if (role !== 'all') {
+      filtered = filtered.filter(u => u.role === role);
+    }
+    if (dept !== 'all') {
+      filtered = filtered.filter(u => u.department === dept || u.department === 'all');
+    }
+
+    filtered.sort((a, b) => {
+      const cmp = a.name.localeCompare(b.name);
+      return this.userSortAsc ? cmp : -cmp;
+    });
+
+    return filtered;
+  }
+
   renderUsers() {
     const userList = document.getElementById('userList');
+    const paginationEl = document.getElementById('userPagination');
     if (!userList) return;
+
+    const filtered = this.getFilteredUsers();
+    const totalPages = Math.ceil(filtered.length / this.userPageSize) || 1;
+    if (this.userPage > totalPages) this.userPage = totalPages;
+
+    const start = (this.userPage - 1) * this.userPageSize;
+    const pageUsers = filtered.slice(start, start + this.userPageSize);
 
     const roles = ['Administrator', 'Department Manager', 'Staff', 'Guest'];
     const departments = ['all', 'engineering', 'housekeeping', 'front-office', 'it', 'fb', 'security', 'hr', 'finance'];
 
-    userList.innerHTML = `
-      <div class="user-table">
-        <div class="user-table-header">
-          <span>Name</span>
-          <span>Email</span>
-          <span>Role</span>
-          <span>Department</span>
-        </div>
-        ${this.users.map(user => `
-          <div class="user-table-row">
-            <span class="user-table-name">${this.escapeHtml(user.name)}</span>
-            <span class="user-table-email">${this.escapeHtml(user.email)}</span>
-            <select class="user-role-select" onchange="app.updateUserRole(${user.id}, this.value)">
-              ${roles.map(r => `<option value="${r}" ${user.role === r ? 'selected' : ''}>${r}</option>`).join('')}
-            </select>
-            <select class="user-dept-select" onchange="app.updateUserDepartment(${user.id}, this.value)">
-              ${departments.map(d => `<option value="${d}" ${user.department === d ? 'selected' : ''}>${d === 'all' ? 'All Departments' : this.formatDepartment(d)}</option>`).join('')}
-            </select>
+    if (pageUsers.length === 0) {
+      userList.innerHTML = '<div class="empty-state"><p>No users found</p></div>';
+    } else {
+      userList.innerHTML = `
+        <div class="user-table">
+          <div class="user-table-header">
+            <span>Name</span>
+            <span>Email</span>
+            <span>Role</span>
+            <span>Department</span>
+            <span>Actions</span>
           </div>
-        `).join('')}
-      </div>
-    `;
-  }
+          ${pageUsers.map(user => `
+            <div class="user-table-row">
+              <div class="user-card-field"><span class="user-card-label">Name</span><span class="user-table-name">${this.escapeHtml(user.name)}</span></div>
+              <div class="user-card-field"><span class="user-card-label">Email</span><span class="user-table-email">${this.escapeHtml(user.email)}</span></div>
+              <div class="user-card-field"><span class="user-card-label">Role</span><span class="badge badge-role-${user.role.toLowerCase().replace(/\s+/g, '-')}">${user.role}</span></div>
+              <div class="user-card-field"><span class="user-card-label">Department</span><span class="badge badge-department">${user.department === 'all' ? 'All' : this.formatDepartment(user.department)}</span></div>
+              <div class="user-card-actions">
+                <button class="btn-icon" onclick="app.openEditUserModal(${user.id})" title="Edit">✏️</button>
+                <button class="btn-icon" onclick="app.openDeleteUserModal(${user.id})" title="Delete">🗑️</button>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
 
-  updateUserRole(userId, newRole) {
-    const user = this.users.find(u => u.id === userId);
-    if (user) {
-      user.role = newRole;
-      this.saveUsers();
-      this.showToast(`${user.name} role updated to ${newRole}`);
+    // Sort button state
+    const sortBtn = document.getElementById('userSortBtn');
+    if (sortBtn) {
+      sortBtn.classList.toggle('active', !this.userSortAsc);
+    }
+
+    // Pagination
+    if (paginationEl) {
+      if (totalPages <= 1) {
+        paginationEl.innerHTML = '';
+      } else {
+        paginationEl.innerHTML = `
+          <button class="pagination-btn" ${this.userPage === 1 ? 'disabled' : ''} onclick="app.goToUserPage(${this.userPage - 1})">← Prev</button>
+          <span class="pagination-info">Page ${this.userPage} of ${totalPages}</span>
+          <button class="pagination-btn" ${this.userPage === totalPages ? 'disabled' : ''} onclick="app.goToUserPage(${this.userPage + 1})">Next →</button>
+        `;
+      }
     }
   }
 
-  updateUserDepartment(userId, newDept) {
-    const user = this.users.find(u => u.id === userId);
-    if (user) {
-      user.department = newDept;
-      this.saveUsers();
-      this.showToast(`${user.name} department updated to ${newDept === 'all' ? 'All Departments' : this.formatDepartment(newDept)}`);
+  goToUserPage(page) {
+    this.userPage = page;
+    this.renderUsers();
+  }
+
+  // Add User Modal
+  openAddUserModal() {
+    document.getElementById('addUserName').value = '';
+    document.getElementById('addUserEmail').value = '';
+    document.getElementById('addUserRole').value = 'Staff';
+    document.getElementById('addUserDept').value = 'engineering';
+    document.getElementById('addUserModal').style.display = 'flex';
+  }
+
+  closeAddUserModal() {
+    document.getElementById('addUserModal').style.display = 'none';
+  }
+
+  confirmAddUser() {
+    const name = document.getElementById('addUserName').value.trim();
+    const email = document.getElementById('addUserEmail').value.trim();
+    const role = document.getElementById('addUserRole').value;
+    const department = document.getElementById('addUserDept').value;
+
+    if (!name || !email) {
+      this.showToast('Name and email are required');
+      return;
     }
+    if (this.users.some(u => u.email === email)) {
+      this.showToast('Email already exists');
+      return;
+    }
+
+    const newId = Math.max(...this.users.map(u => u.id), 0) + 1;
+    this.users.push({ id: newId, name, email, role, department });
+    this.saveUsers();
+    this.closeAddUserModal();
+    this.renderUsers();
+    this.showToast(`${name} added successfully`);
+  }
+
+  // Edit User Modal
+  openEditUserModal(userId) {
+    const user = this.users.find(u => u.id === userId);
+    if (!user) return;
+
+    document.getElementById('editUserId').value = user.id;
+    document.getElementById('editUserName').value = user.name;
+    document.getElementById('editUserEmail').value = user.email;
+    document.getElementById('editUserRole').value = user.role;
+    document.getElementById('editUserDept').value = user.department;
+    document.getElementById('editUserModal').style.display = 'flex';
+  }
+
+  closeEditUserModal() {
+    document.getElementById('editUserModal').style.display = 'none';
+  }
+
+  confirmEditUser() {
+    const id = parseInt(document.getElementById('editUserId').value);
+    const name = document.getElementById('editUserName').value.trim();
+    const email = document.getElementById('editUserEmail').value.trim();
+    const role = document.getElementById('editUserRole').value;
+    const department = document.getElementById('editUserDept').value;
+
+    if (!name || !email) {
+      this.showToast('Name and email are required');
+      return;
+    }
+
+    const user = this.users.find(u => u.id === id);
+    if (!user) return;
+
+    if (this.users.some(u => u.email === email && u.id !== id)) {
+      this.showToast('Email already exists');
+      return;
+    }
+
+    user.name = name;
+    user.email = email;
+    user.role = role;
+    user.department = department;
+    this.saveUsers();
+    this.closeEditUserModal();
+    this.renderUsers();
+    this.showToast(`${name} updated successfully`);
+  }
+
+  // Delete User Modal
+  openDeleteUserModal(userId) {
+    const user = this.users.find(u => u.id === userId);
+    if (!user) return;
+
+    document.getElementById('deleteUserId').value = user.id;
+    document.getElementById('deleteUserName').textContent = user.name;
+    document.getElementById('deleteUserModal').style.display = 'flex';
+  }
+
+  closeDeleteUserModal() {
+    document.getElementById('deleteUserModal').style.display = 'none';
+  }
+
+  confirmDeleteUser() {
+    const id = parseInt(document.getElementById('deleteUserId').value);
+    const user = this.users.find(u => u.id === id);
+    if (!user) return;
+
+    if (user.id === this.currentUser?.id) {
+      this.showToast('Cannot delete your own account');
+      this.closeDeleteUserModal();
+      return;
+    }
+
+    this.users = this.users.filter(u => u.id !== id);
+    this.saveUsers();
+    this.closeDeleteUserModal();
+    this.renderUsers();
+    this.showToast(`${user.name} deleted`);
   }
 
   analyzeTicket() {

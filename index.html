@@ -387,9 +387,46 @@
             <h1 class="page-title">User Management</h1>
             <p class="page-subtitle">Manage system users and roles</p>
           </div>
+          <div class="section-actions">
+            <button class="submit-btn btn-sm" onclick="app.openAddUserModal()">+ Add User</button>
+          </div>
         </div>
+
+        <div class="user-toolbar glass-card">
+          <div class="user-toolbar-left">
+            <div class="user-search-wrap">
+              <svg class="search-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="userSearch" class="user-search-input" placeholder="Search users..." oninput="app.filterUsers()">
+            </div>
+            <select id="userFilterRole" class="user-filter-select" onchange="app.filterUsers()">
+              <option value="all">All Roles</option>
+              <option value="Administrator">Administrator</option>
+              <option value="Department Manager">Dept Manager</option>
+              <option value="Staff">Staff</option>
+              <option value="Guest">Guest</option>
+            </select>
+            <select id="userFilterDept" class="user-filter-select" onchange="app.filterUsers()">
+              <option value="all">All Departments</option>
+              <option value="engineering">Engineering</option>
+              <option value="housekeeping">Housekeeping</option>
+              <option value="front-office">Front Office</option>
+              <option value="it">IT</option>
+              <option value="fb">F&B</option>
+              <option value="security">Security</option>
+              <option value="hr">HR</option>
+              <option value="finance">Finance</option>
+            </select>
+          </div>
+          <div class="user-toolbar-right">
+            <button class="btn-icon-only" onclick="app.toggleUserSort()" title="Sort by name" id="userSortBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M11 5h10"/><path d="M11 9h7"/><path d="M11 13h4"/><path d="M3 17l3 3 3-3"/><path d="M6 18V4"/></svg>
+            </button>
+          </div>
+        </div>
+
         <div class="glass-card">
           <div id="userList" class="user-list"></div>
+          <div id="userPagination" class="user-pagination"></div>
         </div>
       </section>
 
@@ -436,6 +473,120 @@
 
   <!-- Mobile sidebar overlay -->
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Add User Modal -->
+  <div class="modal-overlay" id="addUserModal" style="display: none;">
+    <div class="modal glass-card">
+      <div class="modal-header">
+        <h3>Add User</h3>
+        <button class="modal-close" onclick="app.closeAddUserModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="addUserName">Name</label>
+          <input type="text" id="addUserName" placeholder="Full name" required>
+        </div>
+        <div class="form-group">
+          <label for="addUserEmail">Email</label>
+          <input type="email" id="addUserEmail" placeholder="user@hotel.com" required>
+        </div>
+        <div class="form-group">
+          <label for="addUserRole">Role</label>
+          <select id="addUserRole">
+            <option value="Staff">Staff</option>
+            <option value="Department Manager">Department Manager</option>
+            <option value="Administrator">Administrator</option>
+            <option value="Guest">Guest</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="addUserDept">Department</label>
+          <select id="addUserDept">
+            <option value="engineering">Engineering</option>
+            <option value="housekeeping">Housekeeping</option>
+            <option value="front-office">Front Office</option>
+            <option value="it">IT</option>
+            <option value="fb">F&B</option>
+            <option value="security">Security</option>
+            <option value="hr">HR</option>
+            <option value="finance">Finance</option>
+            <option value="all">All Departments</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="app.closeAddUserModal()">Cancel</button>
+        <button class="submit-btn" onclick="app.confirmAddUser()">Add User</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit User Modal -->
+  <div class="modal-overlay" id="editUserModal" style="display: none;">
+    <div class="modal glass-card">
+      <div class="modal-header">
+        <h3>Edit User</h3>
+        <button class="modal-close" onclick="app.closeEditUserModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="editUserId">
+        <div class="form-group">
+          <label for="editUserName">Name</label>
+          <input type="text" id="editUserName" placeholder="Full name" required>
+        </div>
+        <div class="form-group">
+          <label for="editUserEmail">Email</label>
+          <input type="email" id="editUserEmail" placeholder="user@hotel.com" required>
+        </div>
+        <div class="form-group">
+          <label for="editUserRole">Role</label>
+          <select id="editUserRole">
+            <option value="Staff">Staff</option>
+            <option value="Department Manager">Department Manager</option>
+            <option value="Administrator">Administrator</option>
+            <option value="Guest">Guest</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="editUserDept">Department</label>
+          <select id="editUserDept">
+            <option value="engineering">Engineering</option>
+            <option value="housekeeping">Housekeeping</option>
+            <option value="front-office">Front Office</option>
+            <option value="it">IT</option>
+            <option value="fb">F&B</option>
+            <option value="security">Security</option>
+            <option value="hr">HR</option>
+            <option value="finance">Finance</option>
+            <option value="all">All Departments</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="app.closeEditUserModal()">Cancel</button>
+        <button class="submit-btn" onclick="app.confirmEditUser()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete User Modal -->
+  <div class="modal-overlay" id="deleteUserModal" style="display: none;">
+    <div class="modal glass-card">
+      <div class="modal-header">
+        <h3>Delete User</h3>
+        <button class="modal-close" onclick="app.closeDeleteUserModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete <strong id="deleteUserName"></strong>?</p>
+        <p class="text-muted">This action cannot be undone.</p>
+        <input type="hidden" id="deleteUserId">
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="app.closeDeleteUserModal()">Cancel</button>
+        <button class="btn-danger" onclick="app.confirmDeleteUser()">Delete User</button>
+      </div>
+    </div>
+  </div>
 
   <script src="ai-classifier.js"></script>
   <script src="ai-router.js"></script>
