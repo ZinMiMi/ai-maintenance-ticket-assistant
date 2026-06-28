@@ -60,6 +60,8 @@ class HotelOperationsApp {
     this.applyPermissions();
     this.renderTickets();
     this.renderDashboard();
+    this.updateNotificationBadge();
+    this.renderNotifications();
     // Navigate to dashboard if on login or no hash
     const hash = window.location.hash.replace('#', '');
     if (!hash || hash === 'login') {
@@ -174,6 +176,30 @@ class HotelOperationsApp {
         const html = document.documentElement;
         const current = html.getAttribute('data-theme');
         html.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+      });
+    }
+
+    // Notification dropdown toggle
+    const notificationBtn = document.getElementById('notificationBtn');
+    const notificationDropdown = document.getElementById('notificationDropdown');
+    if (notificationBtn && notificationDropdown) {
+      notificationBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        notificationDropdown.classList.toggle('open');
+      });
+      document.addEventListener('click', (e) => {
+        if (!notificationDropdown.contains(e.target) && e.target !== notificationBtn) {
+          notificationDropdown.classList.remove('open');
+        }
+      });
+    }
+
+    // Clear all notifications
+    const clearNotifications = document.getElementById('clearNotifications');
+    if (clearNotifications) {
+      clearNotifications.addEventListener('click', () => {
+        this.clearNotifications();
+        this.showToast('Notifications cleared');
       });
     }
 

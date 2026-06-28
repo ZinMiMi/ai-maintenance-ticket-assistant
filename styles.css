@@ -1271,6 +1271,43 @@ body {
   font-size: 0.875rem;
 }
 
+.notification-item {
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: 1px solid var(--border-light);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.notification-item:hover {
+  background: var(--surface-alt);
+}
+
+.notification-item.unread {
+  border-left: 3px solid var(--primary);
+}
+
+.notification-item.read {
+  opacity: 0.7;
+}
+
+.notification-item-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.notification-item-message {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-bottom: 2px;
+}
+
+.notification-item-time {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
 .user-menu {
   display: flex;
   align-items: center;
