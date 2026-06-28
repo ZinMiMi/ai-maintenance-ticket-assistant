@@ -1,233 +1,417 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Hotel Operations Management System</title>
+  <title>HotelOS — AI Operations Management</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="app-container">
-    <header class="app-header">
-      <h1>🏨 AI Hotel Operations Management System</h1>
-      <p class="subtitle">Streamline hotel operations and maintenance requests</p>
-      <a href="guest.html" class="guest-portal-link">📱 Guest Service Portal</a>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <span class="logo-icon">🏨</span>
+        <span class="logo-text">HotelOS</span>
+      </div>
+      <button class="sidebar-collapse-btn" id="sidebarCollapseBtn" title="Collapse sidebar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="11 17 6 12 11 7"/><polyline points="18 17 13 12 18 7"/></svg>
+      </button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <span class="nav-section-label">Main</span>
+        <a href="#dashboard" class="nav-item active" data-section="dashboard">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          <span class="nav-label">Dashboard</span>
+        </a>
+        <a href="#tickets" class="nav-item" data-section="tickets">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          <span class="nav-label">Tickets</span>
+        </a>
+        <a href="#new-ticket" class="nav-item" data-section="new-ticket">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          <span class="nav-label">New Ticket</span>
+        </a>
+      </div>
+
+      <div class="nav-section">
+        <span class="nav-section-label">Tools</span>
+        <a href="guest.html" class="nav-item">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span class="nav-label">Guest Portal</span>
+        </a>
+        <a href="#reports" class="nav-item" data-section="reports">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          <span class="nav-label">Reports</span>
+        </a>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="user-avatar">HM</div>
+        <div class="user-info">
+          <span class="user-name">Hotel Manager</span>
+          <span class="user-role">Administrator</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Layout -->
+  <div class="main-layout" id="mainLayout">
+
+    <!-- Top Navigation Bar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="mobile-menu-btn" id="mobileMenuBtn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <div class="search-container">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="globalSearch" class="search-input" placeholder="Search tickets, departments...">
+          <kbd class="search-kbd">/</kbd>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <button class="topbar-btn" id="themeToggle" title="Toggle dark mode">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+        <div class="notification-wrapper">
+          <button class="topbar-btn notification-btn" id="notificationBtn" title="Notifications">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <span class="notification-badge" id="notificationBadge">0</span>
+          </button>
+          <div class="notification-dropdown" id="notificationDropdown">
+            <div class="notification-header">
+              <h4>Notifications</h4>
+              <button class="notification-clear" id="clearNotifications">Clear all</button>
+            </div>
+            <div class="notification-list" id="notificationList">
+              <div class="notification-empty">No new notifications</div>
+            </div>
+          </div>
+        </div>
+        <div class="user-menu">
+          <div class="user-avatar-sm">HM</div>
+        </div>
+      </div>
     </header>
 
-    <main class="main-content">
-      <!-- Operations Dashboard -->
-      <section class="dashboard-section" id="dashboard">
-        <h2>📊 Operations Dashboard</h2>
-        <div class="dashboard-stats">
-          <div class="stat-card stat-total">
-            <span class="stat-icon">📋</span>
-            <div class="stat-info">
+    <!-- Page Content -->
+    <div class="page-content">
+
+      <!-- Dashboard Section -->
+      <section class="page-section active" id="section-dashboard">
+        <div class="section-header">
+          <div>
+            <h1 class="page-title">Dashboard</h1>
+            <p class="page-subtitle">Hotel operations overview at a glance</p>
+          </div>
+          <div class="section-actions">
+            <span class="date-display" id="currentDate"></span>
+          </div>
+        </div>
+
+        <!-- Stat Cards -->
+        <div class="stats-grid">
+          <div class="stat-card" data-accent="primary">
+            <div class="stat-icon-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+            <div class="stat-content">
               <span class="stat-value" id="statTotal">0</span>
               <span class="stat-label">Total Tickets</span>
             </div>
           </div>
-          <div class="stat-card stat-open">
-            <span class="stat-icon">🔓</span>
-            <div class="stat-info">
+          <div class="stat-card" data-accent="info">
+            <div class="stat-icon-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            </div>
+            <div class="stat-content">
               <span class="stat-value" id="statOpen">0</span>
               <span class="stat-label">Open</span>
             </div>
           </div>
-          <div class="stat-card stat-progress">
-            <span class="stat-icon">🔄</span>
-            <div class="stat-info">
+          <div class="stat-card" data-accent="warning">
+            <div class="stat-icon-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            </div>
+            <div class="stat-content">
               <span class="stat-value" id="statProgress">0</span>
               <span class="stat-label">In Progress</span>
             </div>
           </div>
-          <div class="stat-card stat-pending">
-            <span class="stat-icon">⏸️</span>
-            <div class="stat-info">
+          <div class="stat-card" data-accent="orange">
+            <div class="stat-icon-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            </div>
+            <div class="stat-content">
               <span class="stat-value" id="statPending">0</span>
               <span class="stat-label">Pending</span>
             </div>
           </div>
-          <div class="stat-card stat-resolved">
-            <span class="stat-icon">✅</span>
-            <div class="stat-info">
+          <div class="stat-card" data-accent="success">
+            <div class="stat-icon-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </div>
+            <div class="stat-content">
               <span class="stat-value" id="statResolved">0</span>
               <span class="stat-label">Resolved</span>
             </div>
           </div>
-          <div class="stat-card stat-closed">
-            <span class="stat-icon">📁</span>
-            <div class="stat-info">
+          <div class="stat-card" data-accent="muted">
+            <div class="stat-icon-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <div class="stat-content">
               <span class="stat-value" id="statClosed">0</span>
               <span class="stat-label">Closed</span>
             </div>
           </div>
         </div>
 
-        <div class="dashboard-charts">
-          <div class="chart-card">
-            <h3>By Department</h3>
-            <div id="departmentChart" class="chart-bars"></div>
+        <!-- Charts -->
+        <div class="charts-grid">
+          <div class="chart-card glass-card">
+            <div class="chart-header">
+              <h3>Tickets by Department</h3>
+              <span class="chart-badge">Live</span>
+            </div>
+            <canvas id="departmentChart" width="600" height="300"></canvas>
           </div>
-          <div class="chart-card">
-            <h3>By Priority</h3>
-            <div id="priorityChart" class="chart-bars"></div>
+          <div class="chart-card glass-card">
+            <div class="chart-header">
+              <h3>Tickets by Priority</h3>
+              <span class="chart-badge">Live</span>
+            </div>
+            <canvas id="priorityChart" width="600" height="300"></canvas>
+          </div>
+          <div class="chart-card glass-card chart-wide">
+            <div class="chart-header">
+              <h3>Monthly Trends</h3>
+              <span class="chart-badge">6 months</span>
+            </div>
+            <canvas id="trendsChart" width="1200" height="300"></canvas>
           </div>
         </div>
       </section>
 
-      <!-- Ticket Submission Form -->
-      <section class="ticket-form-section">
-        <h2>Submit New Ticket</h2>
-        <form id="ticketForm" class="ticket-form">
-          <div class="form-group">
-            <label for="issueTitle">Issue Title</label>
-            <input type="text" id="issueTitle" placeholder="Brief description of the issue" required>
+      <!-- Tickets Section -->
+      <section class="page-section" id="section-tickets">
+        <div class="section-header">
+          <div>
+            <h1 class="page-title">Tickets</h1>
+            <p class="page-subtitle">Manage and track all maintenance requests</p>
           </div>
-
-          <div class="form-group">
-            <label for="issueDescription">Description</label>
-            <textarea id="issueDescription" rows="4" placeholder="Provide detailed information about the maintenance issue..." required></textarea>
+          <div class="section-actions">
+            <span class="ticket-count-badge" id="ticketCount">0 tickets</span>
           </div>
+        </div>
 
-          <div class="ai-section">
-            <button type="button" id="aiAnalyzeBtn" class="ai-analyze-btn">
-              🤖 AI Analyze
-            </button>
-            <div id="aiSuggestions" class="ai-suggestions" style="display: none;">
-              <div class="ai-header">
-                <span class="ai-icon">✨</span>
-                <span>AI Suggestions</span>
-                <span id="aiConfidence" class="ai-confidence"></span>
-              </div>
-              <div class="ai-suggestions-grid">
-                <div class="ai-suggestion-item">
-                  <span class="ai-label">Department</span>
-                  <span id="aiDept" class="ai-value"></span>
-                </div>
-                <div class="ai-suggestion-item">
-                  <span class="ai-label">Category</span>
-                  <span id="aiCat" class="ai-value"></span>
-                </div>
-                <div class="ai-suggestion-item">
-                  <span class="ai-label">Priority</span>
-                  <span id="aiPriority" class="ai-value"></span>
-                </div>
-              </div>
-              <button type="button" id="applySuggestions" class="apply-btn">Apply Suggestions</button>
-            </div>
+        <div class="filter-bar glass-card">
+          <div class="filter-group">
+            <label>Status</label>
+            <select id="filterStatus">
+              <option value="all">All Statuses</option>
+              <option value="open">Open</option>
+              <option value="in-progress">In Progress</option>
+              <option value="pending">Pending</option>
+              <option value="resolved">Resolved</option>
+              <option value="closed">Closed</option>
+            </select>
           </div>
-
-          <div class="form-group">
-            <label for="department">Department</label>
-            <select id="department" required>
-              <option value="">Select Department</option>
+          <div class="filter-group">
+            <label>Department</label>
+            <select id="filterDepartment">
+              <option value="all">All Departments</option>
               <option value="engineering">Engineering</option>
               <option value="housekeeping">Housekeeping</option>
               <option value="front-office">Front Office</option>
               <option value="it">IT</option>
-              <option value="fb">F&B (Food & Beverage)</option>
+              <option value="fb">F&B</option>
               <option value="security">Security</option>
               <option value="hr">HR</option>
               <option value="finance">Finance</option>
             </select>
           </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label for="category">Category</label>
-              <select id="category" required>
-                <option value="">Select Category</option>
-                <option value="plumbing">Plumbing</option>
-                <option value="electrical">Electrical</option>
-                <option value="hvac">HVAC</option>
-                <option value="structural">Structural</option>
-                <option value="appliance">Appliance</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label for="priority">Priority Level</label>
-              <select id="priority" required>
-                <option value="">Select Priority</option>
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-                <option value="critical">Critical</option>
-              </select>
-            </div>
+          <div class="filter-group">
+            <label>Category</label>
+            <select id="filterCategory">
+              <option value="all">All Categories</option>
+              <option value="plumbing">Plumbing</option>
+              <option value="electrical">Electrical</option>
+              <option value="hvac">HVAC</option>
+              <option value="structural">Structural</option>
+              <option value="appliance">Appliance</option>
+              <option value="other">Other</option>
+            </select>
           </div>
-
-          <div class="form-group">
-            <label for="assignedTo">Assigned To</label>
-            <input type="text" id="assignedTo" placeholder="Staff member name (optional)">
+          <div class="filter-group">
+            <label>Priority</label>
+            <select id="filterPriority">
+              <option value="all">All Priorities</option>
+              <option value="critical">Critical</option>
+              <option value="high">High</option>
+              <option value="medium">Medium</option>
+              <option value="low">Low</option>
+            </select>
           </div>
-
-          <div class="form-group">
-            <label for="imageUpload">Upload Image (optional)</label>
-            <div class="upload-area" id="uploadArea">
-              <input type="file" id="imageUpload" accept="image/*" class="file-input">
-              <div class="upload-placeholder" id="uploadPlaceholder">
-                <span class="upload-icon">📷</span>
-                <span>Click or drag to upload image</span>
-              </div>
-              <img id="imagePreview" class="image-preview" alt="Preview" style="display:none;">
-            </div>
-          </div>
-
-          <button type="submit" class="submit-btn">Submit Ticket</button>
-        </form>
-      </section>
-
-      <!-- Ticket List -->
-      <section class="ticket-list-section">
-        <h2>Active Tickets <span id="ticketCount" class="ticket-count">0</span></h2>
-        <div class="filter-bar">
-          <select id="filterStatus">
-            <option value="all">All Statuses</option>
-            <option value="open">Open</option>
-            <option value="in-progress">In Progress</option>
-            <option value="pending">Pending</option>
-            <option value="resolved">Resolved</option>
-            <option value="closed">Closed</option>
-          </select>
-          <select id="filterDepartment">
-            <option value="all">All Departments</option>
-            <option value="engineering">Engineering</option>
-            <option value="housekeeping">Housekeeping</option>
-            <option value="front-office">Front Office</option>
-            <option value="it">IT</option>
-            <option value="fb">F&B</option>
-            <option value="security">Security</option>
-            <option value="hr">HR</option>
-            <option value="finance">Finance</option>
-          </select>
-          <select id="filterCategory">
-            <option value="all">All Categories</option>
-            <option value="plumbing">Plumbing</option>
-            <option value="electrical">Electrical</option>
-            <option value="hvac">HVAC</option>
-            <option value="structural">Structural</option>
-            <option value="appliance">Appliance</option>
-            <option value="other">Other</option>
-          </select>
-          <select id="filterPriority">
-            <option value="all">All Priorities</option>
-            <option value="critical">Critical</option>
-            <option value="high">High</option>
-            <option value="medium">Medium</option>
-            <option value="low">Low</option>
-          </select>
         </div>
+
         <div id="ticketList" class="ticket-list">
           <div class="empty-state">
-            <span class="empty-icon">📋</span>
-            <p>No tickets submitted yet</p>
+            <div class="empty-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+            <h3>No tickets yet</h3>
+            <p>Create your first maintenance ticket to get started</p>
           </div>
         </div>
       </section>
-    </main>
+
+      <!-- New Ticket Section -->
+      <section class="page-section" id="section-new-ticket">
+        <div class="section-header">
+          <div>
+            <h1 class="page-title">New Ticket</h1>
+            <p class="page-subtitle">Submit a new maintenance request</p>
+          </div>
+        </div>
+
+        <div class="form-layout">
+          <form id="ticketForm" class="ticket-form glass-card">
+            <div class="form-group">
+              <label for="issueTitle">Issue Title</label>
+              <input type="text" id="issueTitle" placeholder="Brief description of the issue" required>
+            </div>
+
+            <div class="form-group">
+              <label for="issueDescription">Description</label>
+              <textarea id="issueDescription" rows="4" placeholder="Provide detailed information about the maintenance issue..." required></textarea>
+            </div>
+
+            <div class="ai-section glass-card">
+              <button type="button" id="aiAnalyzeBtn" class="ai-analyze-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M12 2a4 4 0 0 1 4 4c0 1.95-1.4 3.57-3.25 3.92L12 22"/><path d="M12 2a4 4 0 0 0-4 4c0 1.95 1.4 3.57 3.25 3.92"/><circle cx="12" cy="14" r="2"/></svg>
+                <span>AI Analyze</span>
+              </button>
+              <div id="aiSuggestions" class="ai-suggestions" style="display: none;">
+                <div class="ai-header">
+                  <span class="ai-icon">✨</span>
+                  <span>AI Suggestions</span>
+                  <span id="aiConfidence" class="ai-confidence"></span>
+                </div>
+                <div class="ai-suggestions-grid">
+                  <div class="ai-suggestion-item">
+                    <span class="ai-label">Department</span>
+                    <span id="aiDept" class="ai-value"></span>
+                  </div>
+                  <div class="ai-suggestion-item">
+                    <span class="ai-label">Category</span>
+                    <span id="aiCat" class="ai-value"></span>
+                  </div>
+                  <div class="ai-suggestion-item">
+                    <span class="ai-label">Priority</span>
+                    <span id="aiPriority" class="ai-value"></span>
+                  </div>
+                </div>
+                <button type="button" id="applySuggestions" class="apply-btn">Apply Suggestions</button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="department">Department</label>
+              <select id="department" required>
+                <option value="">Select Department</option>
+                <option value="engineering">Engineering</option>
+                <option value="housekeeping">Housekeeping</option>
+                <option value="front-office">Front Office</option>
+                <option value="it">IT</option>
+                <option value="fb">F&B (Food & Beverage)</option>
+                <option value="security">Security</option>
+                <option value="hr">HR</option>
+                <option value="finance">Finance</option>
+              </select>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="category">Category</label>
+                <select id="category" required>
+                  <option value="">Select Category</option>
+                  <option value="plumbing">Plumbing</option>
+                  <option value="electrical">Electrical</option>
+                  <option value="hvac">HVAC</option>
+                  <option value="structural">Structural</option>
+                  <option value="appliance">Appliance</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="priority">Priority Level</label>
+                <select id="priority" required>
+                  <option value="">Select Priority</option>
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                  <option value="critical">Critical</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="assignedTo">Assigned To</label>
+              <input type="text" id="assignedTo" placeholder="Staff member name (optional)">
+            </div>
+
+            <div class="form-group">
+              <label>Upload Image (optional)</label>
+              <div class="upload-area" id="uploadArea">
+                <input type="file" id="imageUpload" accept="image/*" class="file-input">
+                <div class="upload-placeholder" id="uploadPlaceholder">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="32" height="32"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                  <span>Click or drag to upload image</span>
+                </div>
+                <img id="imagePreview" class="image-preview" alt="Preview" style="display:none;">
+              </div>
+            </div>
+
+            <button type="submit" class="submit-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              Submit Ticket
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Reports Section (placeholder) -->
+      <section class="page-section" id="section-reports">
+        <div class="section-header">
+          <div>
+            <h1 class="page-title">Reports</h1>
+            <p class="page-subtitle">Analytics and performance metrics</p>
+          </div>
+        </div>
+        <div class="reports-placeholder glass-card">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="64" height="64"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          <h3>Coming Soon</h3>
+          <p>Advanced reporting and analytics features are under development.</p>
+        </div>
+      </section>
+
+    </div>
   </div>
+
+  <!-- Mobile sidebar overlay -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
   <script src="ai-classifier.js"></script>
   <script src="app.js"></script>
