@@ -4,18 +4,17 @@ class HotelOperationsApp {
   constructor() {
     this.TICKETS_KEY = 'hotelOperationsTickets';
     this.USERS_KEY = 'hotelOperationsUsers';
-    this.SESSION_KEY = 'hotelOperationsSession';
     this.NOTIFICATIONS_KEY = 'hotelOperationsNotifications';
 
     this.tickets = this.loadTickets();
     this.users = this.loadUsers();
     this.notifications = this.loadNotifications();
-    this.currentUser = this.getCurrentUser();
+    this.currentUser = null;
     this.router = new AIRouter();
     this.init();
   }
 
-  init() {
+  async init() {
     this.form = document.getElementById('ticketForm');
     this.ticketList = document.getElementById('ticketList');
     this.ticketCount = document.getElementById('ticketCount');
@@ -33,11 +32,17 @@ class HotelOperationsApp {
     this.bindLogin();
     this.bindEvents();
 
-    if (this.currentUser) {
-      this.showApp();
-    } else {
-      this.showLogin();
-    }
+    // Listen for Supabase auth state changes
+    onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT') {
+        this.currentUser = null;
+        this.showLogin();
+      }
+      // SIGNED_IN is handled by the login flow itself
+    });
+
+    // Restore session from Supabase
+    await this.restoreSession();
 
     this.updateDateDisplay();
   }
@@ -69,6 +74,25 @@ class HotelOperationsApp {
     } else {
       this.navigateTo(hash);
     }
+  }
+
+  async restoreSession() {
+    const { data: { session } } = await getSession();
+    if (session && session.user) {
+      const { data: profile } = await getUserProfile(session.user.id);
+      if (profile) {
+        this.currentUser = {
+          id: profile.id,
+          name: profile.name,
+          email: profile.email,
+          role: profile.role,
+          department: profile.department
+        };
+        this.showApp();
+        return;
+      }
+    }
+    this.showLogin();
   }
 
   applyPermissions() {
@@ -111,24 +135,39 @@ class HotelOperationsApp {
   bindLogin() {
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
-      loginForm.addEventListener('submit', (e) => {
+      loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const email = document.getElementById('loginEmail').value;
-        const user = this.users.find(u => u.email === email);
-        if (user) {
-          this.setCurrentUser(user);
+        const password = document.getElementById('loginPassword').value;
+
+        const { data, error } = await signIn(email, password);
+        if (error) {
+          this.showToast(error.message || 'Login failed');
+          return;
+        }
+
+        const { data: profile } = await getUserProfile(data.user.id);
+        if (profile) {
+          this.currentUser = {
+            id: profile.id,
+            name: profile.name,
+            email: profile.email,
+            role: profile.role,
+            department: profile.department
+          };
           this.showApp();
-          this.showToast(`Welcome, ${user.name}!`);
+          this.showToast(`Welcome, ${profile.name}!`);
         } else {
-          this.showToast('User not found');
+          this.showToast('User profile not found');
         }
       });
     }
 
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
-      logoutBtn.addEventListener('click', () => {
-        this.logout();
+      logoutBtn.addEventListener('click', async () => {
+        await signOut();
+        this.currentUser = null;
         window.location.hash = '';
         window.location.reload();
       });
@@ -747,18 +786,7 @@ class HotelOperationsApp {
   }
 
   getCurrentUser() {
-    const saved = localStorage.getItem(this.SESSION_KEY);
-    return saved ? JSON.parse(saved) : null;
-  }
-
-  setCurrentUser(user) {
-    this.currentUser = user;
-    localStorage.setItem(this.SESSION_KEY, JSON.stringify(user));
-  }
-
-  logout() {
-    this.currentUser = null;
-    localStorage.removeItem(this.SESSION_KEY);
+    return this.currentUser;
   }
 
   getUsersByDepartment(department) {

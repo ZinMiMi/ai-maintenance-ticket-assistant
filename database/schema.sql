@@ -118,14 +118,21 @@ ALTER TABLE comments ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "departments_select" ON departments
   FOR SELECT USING (true);
 
--- USERS: everyone can read, admins can write
+-- USERS: everyone can read, self can insert (for trigger), admins can write
 CREATE POLICY "users_select" ON users
   FOR SELECT USING (true);
+
+-- Allow the handle_new_user trigger to insert a profile for the new auth user
+CREATE POLICY "users_self_insert" ON users
+  FOR INSERT WITH CHECK (auth.uid() = id);
 
 CREATE POLICY "users_admin_insert" ON users
   FOR INSERT WITH CHECK (
     EXISTS (SELECT 1 FROM users WHERE id = auth.uid() AND role = 'Administrator')
   );
+
+CREATE POLICY "users_self_update" ON users
+  FOR UPDATE USING (auth.uid() = id);
 
 CREATE POLICY "users_admin_update" ON users
   FOR UPDATE USING (
@@ -247,3 +254,29 @@ CREATE TRIGGER set_tickets_updated_at
   BEFORE UPDATE ON tickets
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
+
+-- =====================================================
+-- AUTO-CREATE USER PROFILE on auth signup
+-- When Supabase Auth creates a new user, this trigger
+-- inserts a matching row into public.users using
+-- metadata from auth.users (name, role, department).
+-- =====================================================
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO public.users (id, name, email, role, department)
+  VALUES (
+    NEW.id,
+    COALESCE(NEW.raw_user_meta_data->>'name', split_part(NEW.email, '@', 1)),
+    NEW.email,
+    COALESCE(NEW.raw_user_meta_data->>'role', 'Staff'),
+    COALESCE(NEW.raw_user_meta_data->>'department', 'all')
+  );
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW
+  EXECUTE FUNCTION public.handle_new_user();

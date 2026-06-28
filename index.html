@@ -126,21 +126,16 @@
             </div>
             <form id="loginForm">
               <div class="form-group">
-                <label for="loginEmail">Select User</label>
-                <select id="loginEmail" required>
-                  <option value="">Choose a demo user...</option>
-                  <option value="admin@hotel.com">Admin User — Administrator</option>
-                  <option value="eng.manager@hotel.com">Eng Manager — Dept Manager (Engineering)</option>
-                  <option value="engineer1@hotel.com">Engineer One — Staff (Engineering)</option>
-                  <option value="hk.manager@hotel.com">HK Manager — Dept Manager (Housekeeping)</option>
-                  <option value="housekeeping1@hotel.com">Housekeeper One — Staff (Housekeeping)</option>
-                  <option value="fo.manager@hotel.com">FO Manager — Dept Manager (Front Office)</option>
-                  <option value="finance1@hotel.com">Finance Staff — Staff (Finance)</option>
-                </select>
+                <label for="loginEmail">Email</label>
+                <input type="email" id="loginEmail" placeholder="you@hotel.com" required>
+              </div>
+              <div class="form-group">
+                <label for="loginPassword">Password</label>
+                <input type="password" id="loginPassword" placeholder="••••••••" required>
               </div>
               <button type="submit" class="submit-btn">Sign In</button>
             </form>
-            <p class="login-hint">Demo system — select any user to continue</p>
+            <p class="login-hint">Enter your Supabase credentials to continue</p>
           </div>
         </div>
       </section>

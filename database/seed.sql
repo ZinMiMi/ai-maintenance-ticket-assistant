@@ -1,5 +1,5 @@
 -- HotelOS Seed Data
--- Run AFTER schema.sql and AFTER creating auth users in Supabase Dashboard
+-- Run AFTER schema.sql
 
 -- =====================================================
 -- DEPARTMENTS
@@ -17,37 +17,53 @@ ON CONFLICT (id) DO NOTHING;
 
 -- =====================================================
 -- DEMO USERS
--- Before running this, create auth users in:
---   Supabase Dashboard → Authentication → Users → Invite user
 --
--- Create these 7 auth users with any password you choose:
---   admin@hotel.com
---   eng.manager@hotel.com
---   engineer1@hotel.com
---   hk.manager@hotel.com
---   housekeeping1@hotel.com
---   fo.manager@hotel.com
---   finance1@hotel.com
+-- The handle_new_user trigger automatically creates a
+-- public.users profile when an auth user is created.
+-- Use ONE of these methods to create auth users:
 --
--- Then replace the UUIDs below with the actual auth user IDs
--- from the Authentication → Users table.
+-- METHOD 1: Supabase Dashboard (manual)
+--   Go to: Authentication → Users → Invite user
+--   Create each user with the email and a password.
+--   The trigger creates the profile automatically.
+--
+-- METHOD 2: seed-users.js (automated)
+--   Run: node database/seed-users.js
+--   This uses the Supabase Admin API to create users
+--   with the correct metadata for roles/departments.
+--
+-- METHOD 3: SQL helper below (if auth users exist)
+--   If you already created auth users in the Dashboard,
+--   call set_seed_user_role() to set their role/department.
+--   The trigger may have already created profiles with
+--   default values; this function updates them.
 -- =====================================================
 
--- Replace these placeholder UUIDs with real auth user IDs:
---   '00000000-0000-0000-0000-000000000001' → admin@hotel.com
---   '00000000-0000-0000-0000-000000000002' → eng.manager@hotel.com
---   '00000000-0000-0000-0000-000000000003' → engineer1@hotel.com
---   '00000000-0000-0000-0000-000000000004' → hk.manager@hotel.com
---   '00000000-0000-0000-0000-000000000005' → housekeeping1@hotel.com
---   '00000000-0000-0000-0000-000000000006' → fo.manager@hotel.com
---   '00000000-0000-0000-0000-000000000007' → finance1@hotel.com
+-- Helper function: update a user's role and department
+-- Call this after creating auth users in the Dashboard.
+-- Example:
+--   SELECT set_seed_user_role('admin@hotel.com', 'Administrator', 'all');
 
-INSERT INTO users (id, name, email, role, department) VALUES
-  ('00000000-0000-0000-0000-000000000001', 'Admin User',      'admin@hotel.com',          'Administrator',      'all'),
-  ('00000000-0000-0000-0000-000000000002', 'Eng Manager',     'eng.manager@hotel.com',    'Department Manager', 'engineering'),
-  ('00000000-0000-0000-0000-000000000003', 'Engineer One',    'engineer1@hotel.com',      'Staff',              'engineering'),
-  ('00000000-0000-0000-0000-000000000004', 'HK Manager',      'hk.manager@hotel.com',     'Department Manager', 'housekeeping'),
-  ('00000000-0000-0000-0000-000000000005', 'Housekeeper One', 'housekeeping1@hotel.com',  'Staff',              'housekeeping'),
-  ('00000000-0000-0000-0000-000000000006', 'FO Manager',      'fo.manager@hotel.com',     'Department Manager', 'front-office'),
-  ('00000000-0000-0000-0000-000000000007', 'Finance Staff',   'finance1@hotel.com',       'Staff',              'finance')
-ON CONFLICT (id) DO NOTHING;
+CREATE OR REPLACE FUNCTION set_seed_user_role(
+  user_email TEXT,
+  user_name TEXT,
+  user_role TEXT,
+  user_department TEXT
+) RETURNS VOID AS $$
+BEGIN
+  UPDATE public.users
+  SET name = user_name,
+      role = user_role,
+      department = user_department
+  WHERE email = user_email;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- If auth users already exist, uncomment and run these:
+-- SELECT set_seed_user_role('admin@hotel.com',         'Admin User',      'Administrator',      'all');
+-- SELECT set_seed_user_role('eng.manager@hotel.com',    'Eng Manager',     'Department Manager', 'engineering');
+-- SELECT set_seed_user_role('engineer1@hotel.com',      'Engineer One',    'Staff',              'engineering');
+-- SELECT set_seed_user_role('hk.manager@hotel.com',     'HK Manager',      'Department Manager', 'housekeeping');
+-- SELECT set_seed_user_role('housekeeping1@hotel.com',  'Housekeeper One', 'Staff',              'housekeeping');
+-- SELECT set_seed_user_role('fo.manager@hotel.com',     'FO Manager',      'Department Manager', 'front-office');
+-- SELECT set_seed_user_role('finance1@hotel.com',       'Finance Staff',   'Staff',              'finance');
