@@ -5,9 +5,11 @@ class HotelOperationsApp {
     this.TICKETS_KEY = 'hotelOperationsTickets';
     this.USERS_KEY = 'hotelOperationsUsers';
     this.SESSION_KEY = 'hotelOperationsSession';
+    this.NOTIFICATIONS_KEY = 'hotelOperationsNotifications';
 
     this.tickets = this.loadTickets();
     this.users = this.loadUsers();
+    this.notifications = this.loadNotifications();
     this.currentUser = this.getCurrentUser();
     this.router = new AIRouter();
     this.init();
@@ -304,6 +306,15 @@ class HotelOperationsApp {
 
     this.tickets.unshift(ticket);
     this.saveTickets();
+
+    // Create notification for the assigned department
+    this.createNotification(
+      dept,
+      ticket.id,
+      `New ${priority.toUpperCase()} ticket: ${title}`,
+      `Routed to ${this.formatDepartment(dept)} — ETA: ${eta}`
+    );
+
     this.renderTickets();
     this.renderDashboard();
     this.form.reset();
@@ -580,6 +591,107 @@ class HotelOperationsApp {
   loadTickets() {
     const saved = localStorage.getItem(this.TICKETS_KEY);
     return saved ? JSON.parse(saved) : [];
+  }
+
+  // ---- Notifications ----
+
+  loadNotifications() {
+    const saved = localStorage.getItem(this.NOTIFICATIONS_KEY);
+    return saved ? JSON.parse(saved) : [];
+  }
+
+  saveNotifications() {
+    localStorage.setItem(this.NOTIFICATIONS_KEY, JSON.stringify(this.notifications));
+  }
+
+  createNotification(department, ticketId, title, message) {
+    const notification = {
+      id: Date.now(),
+      department: department,
+      ticketId: ticketId,
+      title: title,
+      message: message,
+      createdDate: new Date().toISOString(),
+      isRead: false
+    };
+    this.notifications.unshift(notification);
+    this.saveNotifications();
+    this.updateNotificationBadge();
+    this.renderNotifications();
+  }
+
+  getVisibleNotifications() {
+    if (!this.currentUser) return [];
+    const user = this.currentUser;
+
+    if (user.role === 'Administrator') {
+      return this.notifications;
+    }
+    if (user.role === 'Department Manager') {
+      return this.notifications.filter(n => n.department === user.department);
+    }
+    if (user.role === 'Staff') {
+      return this.notifications.filter(n =>
+        n.department === user.department ||
+        this.tickets.find(t => t.id === n.ticketId && t.assignedTo === user.name)
+      );
+    }
+    return [];
+  }
+
+  markNotificationRead(id) {
+    const notification = this.notifications.find(n => n.id === id);
+    if (notification) {
+      notification.isRead = true;
+      this.saveNotifications();
+      this.updateNotificationBadge();
+      this.renderNotifications();
+    }
+  }
+
+  clearNotifications() {
+    this.notifications = [];
+    this.saveNotifications();
+    this.updateNotificationBadge();
+    this.renderNotifications();
+  }
+
+  updateNotificationBadge() {
+    const visible = this.getVisibleNotifications();
+    const unread = visible.filter(n => !n.isRead).length;
+    const badge = document.getElementById('notificationBadge');
+    if (badge) {
+      badge.textContent = unread;
+      badge.style.display = unread > 0 ? '' : 'none';
+    }
+  }
+
+  renderNotifications() {
+    const list = document.getElementById('notificationList');
+    if (!list) return;
+
+    const visible = this.getVisibleNotifications();
+    if (visible.length === 0) {
+      list.innerHTML = '<div class="notification-empty">No notifications</div>';
+      return;
+    }
+
+    list.innerHTML = visible.slice(0, 20).map(n => `
+      <div class="notification-item ${n.isRead ? 'read' : 'unread'}" onclick="app.handleNotificationClick(${n.id}, ${n.ticketId})">
+        <div class="notification-item-title">${this.escapeHtml(n.title)}</div>
+        <div class="notification-item-message">${this.escapeHtml(n.message)}</div>
+        <div class="notification-item-time">${this.formatDate(n.createdDate)}</div>
+      </div>
+    `).join('');
+  }
+
+  handleNotificationClick(notificationId, ticketId) {
+    this.markNotificationRead(notificationId);
+    if (ticketId) {
+      this.navigateTo('tickets');
+      // Close notification dropdown
+      document.getElementById('notificationDropdown').classList.remove('open');
+    }
   }
 
   // ---- User Management ----
