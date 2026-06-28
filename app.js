@@ -56,6 +56,7 @@ class HotelOperationsApp {
     document.querySelector('.topbar').style.display = '';
     document.getElementById('mainLayout').style.marginLeft = '';
     this.updateUserDisplay();
+    this.applyPermissions();
     this.renderTickets();
     this.renderDashboard();
     // Navigate to dashboard if on login or no hash
@@ -64,6 +65,28 @@ class HotelOperationsApp {
       this.navigateTo('dashboard');
     } else {
       this.navigateTo(hash);
+    }
+  }
+
+  applyPermissions() {
+    // Hide New Ticket nav for guests
+    const newTicketNav = document.querySelector('[data-section="new-ticket"]');
+    if (newTicketNav) {
+      newTicketNav.style.display = this.canCreateTicket() ? '' : 'none';
+    }
+    // Hide Users nav for non-admins
+    const usersNav = document.getElementById('navUsers');
+    if (usersNav) {
+      usersNav.style.display = this.isAdmin() ? '' : 'none';
+    }
+    // Hide new-ticket section for guests
+    const newTicketSection = document.getElementById('section-new-ticket');
+    if (newTicketSection && !this.canCreateTicket()) {
+      newTicketSection.style.display = 'none';
+    }
+    // Filter department dropdown for managers
+    if (this.isManager() && this.filterDepartment) {
+      this.filterDepartment.value = this.currentUser.department;
     }
   }
 
